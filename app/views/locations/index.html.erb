@@ -1,0 +1,59 @@
+<% content_for(:page_title, "Locations") %>
+<% content_for(:page_actions) do %>
+  <div class="btn-list">
+    <%= link_to new_location_path, class: "btn btn-primary d-none d-sm-inline-block" do %>
+      <i class="ti ti-plus icon"></i>
+      New Location
+    <% end %>
+  </div>
+<% end %>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table card-table table-vcenter text-nowrap datatable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>City / Country</th>
+              <th>Photos</th>
+              <th>Events</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @locations.each do |location| %>
+              <tr>
+                <td>
+                  <div class="d-flex py-1 align-items-center">
+                    <span class="avatar me-2 bg-primary-lt"><i class="ti ti-map-pin"></i></span>
+                    <div class="flex-fill">
+                      <div class="font-weight-medium"><%= link_to location.name, location_path(location), class: "text-body" %></div>
+                      <% if location.parent %>
+                        <div class="text-secondary small">in <%= location.parent.name %></div>
+                      <% end %>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="text-secondary">
+                    <%= [location.city, location.country].compact.join(", ") %>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge bg-secondary-lt"><%= location.photos.count %></span>
+                </td>
+                <td>
+                  <span class="badge bg-secondary-lt"><%= location.events.count %></span>
+                </td>
+                <td class="text-end">
+                  <%= link_to "View", location_path(location), class: "btn btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

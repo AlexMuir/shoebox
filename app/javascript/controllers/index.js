@@ -1,0 +1,5 @@
+import { application } from "./application"
+import PersonAutocompleteController from "./person_autocomplete_controller"
+application.register("person-autocomplete", PersonAutocompleteController)
+import FileTimestampsController from "./file_timestamps_controller"
+application.register("file-timestamps", FileTimestampsController)

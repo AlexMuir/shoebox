@@ -1,0 +1,81 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV["DB_HOST"] %>
+  username: <%= "postgres" if ENV["DB_HOST"] %>
+  password: <%= "postgres" if ENV["DB_HOST"] %>
+
+sqlite: &sqlite
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary:
+    <<: *default
+    database: photos_development
+  cache:
+    <<: *sqlite
+    database: storage/photos_development_cache.sqlite3
+    migrations_paths: db/cache_migrate
+    schema_format: ruby
+    schema_dump: cache_schema.rb
+  queue:
+    <<: *sqlite
+    database: storage/photos_development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+    schema_format: ruby
+    schema_dump: queue_schema.rb
+  cable:
+    <<: *sqlite
+    database: storage/photos_development_cable.sqlite3
+    migrations_paths: db/cable_migrate
+    schema_format: ruby
+    schema_dump: cable_schema.rb
+
+test:
+  primary:
+    <<: *default
+    database: photos_test
+  cache:
+    <<: *sqlite
+    database: storage/photos_test_cache.sqlite3
+    migrations_paths: db/cache_migrate
+    schema_format: ruby
+    schema_dump: cache_schema.rb
+  queue:
+    <<: *sqlite
+    database: storage/photos_test_queue.sqlite3
+    migrations_paths: db/queue_migrate
+    schema_format: ruby
+    schema_dump: queue_schema.rb
+  cable:
+    <<: *sqlite
+    database: storage/photos_test_cable.sqlite3
+    migrations_paths: db/cable_migrate
+    schema_format: ruby
+    schema_dump: cable_schema.rb
+
+production:
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] || (ENV["SECRET_KEY_BASE_DUMMY"] && "postgresql://postgres:postgres@127.0.0.1:5432/photos_dummy") || "" %>
+  cache:
+    <<: *sqlite
+    database: storage/photos_production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+    schema_format: ruby
+    schema_dump: cache_schema.rb
+  queue:
+    <<: *sqlite
+    database: storage/photos_production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+    schema_format: ruby
+    schema_dump: queue_schema.rb
+  cable:
+    <<: *sqlite
+    database: storage/photos_production_cable.sqlite3
+    migrations_paths: db/cable_migrate
+    schema_format: ruby
+    schema_dump: cable_schema.rb

@@ -1,0 +1,60 @@
+<% content_for(:page_title, "People") %>
+<% content_for(:page_actions) do %>
+  <div class="btn-list">
+    <%= link_to new_person_path, class: "btn btn-primary d-none d-sm-inline-block" do %>
+      <i class="ti ti-plus icon"></i>
+      Add Person
+    <% end %>
+  </div>
+<% end %>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table card-table table-vcenter text-nowrap datatable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Dates</th>
+              <th>Photos</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @people.each do |person| %>
+              <tr>
+                <td>
+                  <div class="d-flex py-1 align-items-center">
+                    <span class="avatar me-2 bg-primary-lt"><%= person.full_name.first(2).upcase %></span>
+                    <div class="flex-fill">
+                      <div class="font-weight-medium"><%= link_to person.full_name, person_path(person), class: "text-body" %></div>
+                      <% if person.maiden_name.present? %>
+                        <div class="text-secondary">née <%= person.maiden_name %></div>
+                      <% end %>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <% if person.date_of_birth.present? || person.date_of_death.present? %>
+                    <%= person.date_of_birth&.year || "?" %> - <%= person.date_of_death&.year || "Present" %>
+                    <% if person.age %>
+                      <span class="text-secondary">(<%= person.age %> yrs)</span>
+                    <% end %>
+                  <% else %>
+                    <span class="text-secondary">Unknown</span>
+                  <% end %>
+                </td>
+                <td>
+                  <span class="badge bg-secondary-lt"><%= person.photos.count %></span>
+                </td>
+                <td class="text-end">
+                  <%= link_to "View", person_path(person), class: "btn btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<% content_for(:page_title, "Edit Upload Details") %>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <%= simple_form_for @upload do |f| %>
+          <div class="row">
+            <div class="col-md-6">
+              <fieldset class="form-fieldset">
+                <legend>Source Context</legend>
+                <div class="mb-3">
+                  <%= f.input :source_album, label: "Album / Box Name", input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+                </div>
+                <div class="mb-3">
+                  <%= render "shared/person_autocomplete",
+                    field_name: "upload[source_owner_id]",
+                    label: "Original Owner",
+                    current_person: @upload.source_owner,
+                    placeholder: "Search for a person..." %>
+                </div>
+                <div class="mb-3">
+                  <%= render "shared/person_autocomplete",
+                    field_name: "upload[scanned_by_person_id]",
+                    label: "Scanned by",
+                    current_person: @upload.scanned_by_person,
+                    placeholder: "Who scanned these photos?" %>
+                </div>
+              </fieldset>
+            </div>
+            <div class="col-md-6">
+              <fieldset class="form-fieldset">
+                <legend>Additional Details</legend>
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <%= f.input :year_from, label: "Earliest Year", input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+                  </div>
+                  <div class="col-6">
+                    <%= f.input :year_to, label: "Latest Year", input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <%= f.input :notes, as: :text, input_html: { class: 'form-control', rows: 4 }, label_html: { class: 'form-label' } %>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="form-footer mt-4">
+            <%= link_to "Cancel", upload_path(@upload), class: "btn btn-link" %>
+            <%= f.button :submit, "Save Changes", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

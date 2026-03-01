@@ -1,0 +1,175 @@
+<% content_for(:page_title, @photo.display_title) %>
+<% content_for(:page_actions) do %>
+  <div class="btn-list">
+    <%= link_to edit_photo_path(@photo), class: "btn btn-primary" do %>
+      <i class="ti ti-edit icon"></i>
+      Edit Photo
+    <% end %>
+  </div>
+<% end %>
+<div class="row row-cards">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body p-0 text-center bg-dark">
+        <% if @photo.image.attached? %>
+          <%= image_tag @photo.image.variant(:large), class: "img-fluid", style: "max-height: 80vh; object-fit: contain;" %>
+        <% else %>
+          <div class="p-5 text-white">
+            <i class="ti ti-photo" style="font-size: 5rem;"></i>
+            <p class="mt-3">No image attached</p>
+          </div>
+        <% end %>
+      </div>
+      <% if @photo.description.present? %>
+        <div class="card-body">
+          <p class="mb-0"><%= @photo.description %></p>
+        </div>
+      <% end %>
+    </div>
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="card-title">People in this photo</h3>
+      </div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <% @photo.photo_people.includes(:person).each do |photo_person| %>
+            <span class="badge bg-primary-lt p-2">
+              <%= link_to photo_person.person.full_name, person_path(photo_person.person), class: "text-decoration-none" %>
+              <%= button_to photo_photo_person_path(@photo, photo_person), method: :delete, class: "btn-close ms-2", style: "font-size: 0.5rem;" do %><% end %>
+            </span>
+          <% end %>
+          <% if @photo.people.empty? %>
+            <span class="text-secondary">No people tagged yet.</span>
+          <% end %>
+        </div>
+        <%= simple_form_for :photo_person, url: photo_photo_people_path(@photo), html: { class: "d-flex gap-2" } do |f| %>
+          <%= f.input :person_id, collection: current_family.people.where.not(id: @photo.people.pluck(:id)), label: false, prompt: "Select a person to tag...", input_html: { class: "form-select" } %>
+          <%= f.button :submit, "Tag Person", class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="card-title">Contributions & Notes</h3>
+      </div>
+      <div class="list-group list-group-flush">
+        <% @photo.contributions.each do |contribution| %>
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong><%= contribution.field_name.titleize %>:</strong> <%= contribution.value %>
+                <% if contribution.note.present? %>
+                  <div class="text-secondary mt-1"><%= contribution.note %></div>
+                <% end %>
+              </div>
+              <div class="text-secondary small">
+                by <%= contribution.user.email %> on <%= contribution.created_at.to_date.to_fs(:short) %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if @photo.contributions.empty? %>
+          <div class="list-group-item text-secondary">No contributions yet.</div>
+        <% end %>
+      </div>
+      <div class="card-body border-top">
+        <h4 class="card-title mb-3">Add a Note</h4>
+        <%= simple_form_for [@photo, Contribution.new] do |f| %>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <%= f.input :field_name, collection: ['Date', 'Location', 'People', 'Story', 'Other'], input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+            </div>
+            <div class="col-md-8 mb-3">
+              <%= f.input :value, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+            </div>
+          </div>
+          <div class="mb-3">
+            <%= f.input :note, as: :text, input_html: { class: 'form-control', rows: 2 }, label_html: { class: 'form-label' } %>
+          </div>
+          <%= f.button :submit, "Add Contribution", class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Details</h3>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-5">Date:</dt>
+          <dd class="col-7"><%= @photo.date_text.presence || "Unknown" %></dd>
+          <dt class="col-5">Location:</dt>
+          <dd class="col-7">
+            <% if @photo.location %>
+              <%= link_to @photo.location.name, location_path(@photo.location) %>
+            <% else %>
+              <span class="text-secondary">Unknown</span>
+            <% end %>
+          </dd>
+          <dt class="col-5">Event:</dt>
+          <dd class="col-7">
+            <% if @photo.event %>
+              <%= link_to @photo.event.title, event_path(@photo.event) %>
+            <% else %>
+              <span class="text-secondary">None</span>
+            <% end %>
+          </dd>
+          <dt class="col-5">Photographer:</dt>
+          <dd class="col-7">
+            <% if @photo.photographer %>
+              <%= link_to @photo.photographer.full_name, person_path(@photo.photographer) %>
+            <% else %>
+              <span class="text-secondary">Unknown</span>
+            <% end %>
+          </dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="card-title">File Info</h3>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-5">Filename:</dt>
+          <dd class="col-7 text-truncate" title="<%= @photo.original_filename %>"><%= @photo.original_filename %></dd>
+          <dt class="col-5">Size:</dt>
+          <dd class="col-7"><%= number_to_human_size(@photo.file_size) if @photo.file_size %></dd>
+          <dt class="col-5">Dimensions:</dt>
+          <dd class="col-7"><%= "#{@photo.width} x #{@photo.height}" if @photo.width && @photo.height %></dd>
+          <dt class="col-5">Type:</dt>
+          <dd class="col-7"><%= @photo.content_type %></dd>
+          <dt class="col-5">Uploaded by:</dt>
+          <dd class="col-7"><%= @photo.uploaded_by&.email %></dd>
+          <dt class="col-5">Uploaded on:</dt>
+          <dd class="col-7"><%= @photo.created_at.to_date.to_fs(:short) %></dd>
+          <% if @photo.taken_at %>
+            <dt class="col-5">Taken at:</dt>
+            <dd class="col-7"><%= @photo.taken_at.to_fs(:short) %></dd>
+          <% end %>
+          <% if @photo.file_modified_at %>
+            <dt class="col-5">File modified:</dt>
+            <dd class="col-7"><%= @photo.file_modified_at.to_fs(:short) %></dd>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+    <% if @photo.photo_sources.any? %>
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="card-title">Sources</h3>
+        </div>
+        <div class="list-group list-group-flush">
+          <% @photo.photo_sources.each do |source| %>
+            <div class="list-group-item">
+              <div><strong><%= source.description %></strong></div>
+              <div class="text-secondary small"><%= source.notes %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<% content_for(:page_title, @location.name) %>
+<% content_for(:page_actions) do %>
+  <div class="btn-list">
+    <%= link_to edit_location_path(@location), class: "btn btn-primary" do %>
+      <i class="ti ti-edit icon"></i>
+      Edit Location
+    <% end %>
+  </div>
+<% end %>
+<div class="row row-cards">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">Location Details</h3>
+        <% if @location.parent %>
+          <div class="mb-3">
+            <strong>Part of:</strong><br>
+            <%= link_to @location.parent.name, location_path(@location.parent) %>
+          </div>
+        <% end %>
+        <div class="mb-3">
+          <strong>Address:</strong><br>
+          <% if @location.full_address.present? %>
+            <%= simple_format(@location.full_address) %>
+          <% else %>
+            <span class="text-secondary">No address provided</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <% if @location.children.any? %>
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="card-title">Sub-locations</h3>
+        </div>
+        <div class="list-group list-group-flush">
+          <% @location.children.each do |child| %>
+            <%= link_to child.name, location_path(child), class: "list-group-item list-group-item-action" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <% if @location.events.any? %>
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="card-title">Events Here</h3>
+        </div>
+        <div class="list-group list-group-flush">
+          <% @location.events.each do |event| %>
+            <%= link_to event_path(event), class: "list-group-item list-group-item-action" do %>
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><%= event.title %></h5>
+              </div>
+              <small class="text-secondary"><%= event.date_range_display %></small>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Photos (<%= @location.photos.count %>)</h3>
+      </div>
+      <div class="card-body">
+        <div class="row row-cards">
+          <% @location.photos.each do |photo| %>
+            <div class="col-sm-6 col-md-4">
+              <div class="card card-sm">
+                <%= link_to photo_path(photo), class: "d-block" do %>
+                  <% if photo.image.attached? %>
+                    <%= image_tag photo.image.variant(:thumb), class: "card-img-top", style: "aspect-ratio: 1/1; object-fit: cover;" %>
+                  <% else %>
+                    <div class="card-img-top bg-secondary-lt d-flex align-items-center justify-content-center" style="aspect-ratio: 1/1;">
+                      <i class="ti ti-photo text-secondary" style="font-size: 3rem;"></i>
+                    </div>
+                  <% end %>
+                <% end %>
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <div class="text-truncate" style="max-width: 150px;" title="<%= photo.display_title %>">
+                        <%= link_to photo.display_title, photo_path(photo), class: "text-body fw-bold" %>
+                      </div>
+                      <div class="text-secondary text-truncate" style="max-width: 150px;">
+                        <%= photo.date_text %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+          <% if @location.photos.empty? %>
+            <div class="col-12 text-center py-5 text-secondary">
+              <i class="ti ti-photo-off mb-3" style="font-size: 3rem;"></i>
+              <p>No photos at this location yet.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

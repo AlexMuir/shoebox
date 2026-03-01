@@ -1,0 +1,46 @@
+<%= simple_form_for location do |f| %>
+  <div class="row">
+    <div class="col-md-6">
+      <fieldset class="form-fieldset">
+        <legend>Basic Info</legend>
+        <div class="mb-3">
+          <%= f.input :name, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.association :parent, collection: current_family.locations.where.not(id: location.id), label: "Parent Location", input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        </div>
+      </fieldset>
+    </div>
+    <div class="col-md-6">
+      <fieldset class="form-fieldset">
+        <legend>Address</legend>
+        <div class="mb-3">
+          <%= f.input :address_line_1, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.input :address_line_2, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <%= f.input :city, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+          <div class="col-6 mb-3">
+            <%= f.input :region, label: "State / Province", input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <%= f.input :postal_code, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+          <div class="col-6 mb-3">
+            <%= f.input :country, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <div class="form-footer mt-4">
+    <%= link_to "Cancel", locations_path, class: "btn btn-link" %>
+    <%= f.button :submit, class: "btn btn-primary" %>
+  </div>
+<% end %>

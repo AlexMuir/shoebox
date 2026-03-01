@@ -1,0 +1,58 @@
+<%= simple_form_for photo do |f| %>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= f.input :image, as: :file, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+      </div>
+      <div class="mb-3">
+        <%= f.input :display_title, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+      </div>
+      <div class="mb-3">
+        <%= f.input :description, as: :text, input_html: { class: 'form-control', rows: 4 }, label_html: { class: 'form-label' } %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <fieldset class="form-fieldset">
+        <legend>Date Information</legend>
+        <div class="mb-3">
+          <%= f.input :date_type, collection: ['exact', 'year_month', 'year', 'season', 'decade'], input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="row">
+          <div class="col-4 mb-3">
+            <%= f.input :year, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+          <div class="col-4 mb-3">
+            <%= f.input :month, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+          <div class="col-4 mb-3">
+            <%= f.input :day, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <%= f.input :season, collection: ['Spring', 'Summer', 'Autumn', 'Winter'], input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+          </div>
+          <div class="col-6 mb-3 d-flex align-items-end pb-2">
+            <%= f.input :circa, as: :boolean, wrapper_html: { class: 'form-check' }, input_html: { class: 'form-check-input' }, label_html: { class: 'form-check-label' } %>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="form-fieldset">
+        <legend>Context</legend>
+        <div class="mb-3">
+          <%= f.association :event, collection: current_family.events, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.association :location, collection: current_family.locations, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.association :photographer, collection: current_family.people, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <div class="form-footer mt-4">
+    <%= link_to "Cancel", photos_path, class: "btn btn-link" %>
+    <%= f.button :submit, class: "btn btn-primary" %>
+  </div>
+<% end %>

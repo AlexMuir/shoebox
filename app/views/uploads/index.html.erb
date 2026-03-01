@@ -1,0 +1,55 @@
+<% content_for(:page_title, "Uploads") %>
+<% content_for(:page_actions) do %>
+  <div class="btn-list">
+    <%= link_to new_upload_path, class: "btn btn-primary d-none d-sm-inline-block" do %>
+      <i class="ti ti-upload icon"></i>
+      New Upload
+    <% end %>
+  </div>
+<% end %>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table card-table table-vcenter text-nowrap datatable">
+          <thead>
+            <tr>
+              <th>Source Album</th>
+              <th>Owner</th>
+              <th>Date Range</th>
+              <th>Photos</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @uploads.each do |upload| %>
+              <tr>
+                <td>
+                  <div class="font-weight-medium"><%= link_to upload.source_album.presence || "Untitled Batch", upload_path(upload), class: "text-body" %></div>
+                  <% if upload.notes.present? %>
+                    <div class="text-secondary text-truncate" style="max-width: 200px;"><%= upload.notes %></div>
+                  <% end %>
+                </td>
+                <td><%= upload.source_owner&.full_name %></td>
+                <td><%= upload.date_range_display %></td>
+                <td>
+                  <span class="badge bg-secondary-lt"><%= upload.photos_count %></span>
+                </td>
+                <td>
+                  <span class="badge bg-<%= upload.status == 'completed' ? 'success' : 'warning' %> me-1"></span>
+                  <%= upload.status.titleize %>
+                </td>
+                <td><%= upload.created_at.to_date.to_fs(:short) %></td>
+                <td class="text-end">
+                  <%= link_to "View", upload_path(upload), class: "btn btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

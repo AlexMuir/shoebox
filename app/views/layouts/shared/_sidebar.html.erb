@@ -1,0 +1,77 @@
+<aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <h1 class="navbar-brand navbar-brand-autodark">
+      <a href="<%= root_path %>">
+        <span class="fs-4">📷 Photos</span>
+      </a>
+    </h1>
+    <div class="collapse navbar-collapse" id="sidebar-menu">
+      <ul class="navbar-nav pt-lg-3">
+        <li class="nav-item">
+          <%= link_to root_path, class: "nav-link #{'active' if controller_name == 'site'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-home"></i></span>
+            <span class="nav-link-title">Home</span>
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to photos_path, class: "nav-link #{'active' if controller_name == 'photos'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-photo"></i></span>
+            <span class="nav-link-title">Photos</span>
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to people_path, class: "nav-link #{'active' if controller_name == 'people'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+            <span class="nav-link-title">People</span>
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to events_path, class: "nav-link #{'active' if controller_name == 'events'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-calendar-event"></i></span>
+            <span class="nav-link-title">Events</span>
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to locations_path, class: "nav-link #{'active' if controller_name == 'locations'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+            <span class="nav-link-title">Locations</span>
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to uploads_path, class: "nav-link #{'active' if controller_name == 'uploads'}" do %>
+            <span class="nav-link-icon"><i class="ti ti-upload"></i></span>
+            <span class="nav-link-title">Uploads</span>
+          <% end %>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3">
+        <hr class="my-2">
+        <% if Current.user %>
+          <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+              <span class="nav-link-icon"><i class="ti ti-user-circle"></i></span>
+              <span class="nav-link-title"><%= Current.user.name %></span>
+            </a>
+            <div class="dropdown-menu">
+              <% if Current.user.families.count > 1 %>
+                <h6 class="dropdown-header">Switch Family</h6>
+                <% Current.user.families.each do |family| %>
+                  <% if family != Current.family %>
+                    <%= button_to family.name, switch_family_path(family), method: :post, class: "dropdown-item" %>
+                  <% else %>
+                    <span class="dropdown-item active"><%= family.name %> ✓</span>
+                  <% end %>
+                <% end %>
+                <div class="dropdown-divider"></div>
+              <% end %>
+              <%= button_to "Sign out", session_path, method: :delete, class: "dropdown-item" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</aside>

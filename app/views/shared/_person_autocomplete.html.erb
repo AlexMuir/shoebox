@@ -1,0 +1,33 @@
+<%# Reusable PersonAutocomplete component %>
+<%# Usage: render "shared/person_autocomplete", field_name: "...", label: "...", current_person: nil, placeholder: "..." %>
+<% current_person ||= nil %>
+<% placeholder ||= "Search for a person..." %>
+<% required ||= false %>
+<div data-controller="person-autocomplete"
+     data-person-autocomplete-search-url-value="<%= search_people_path %>"
+     data-person-autocomplete-create-url-value="<%= people_path(format: :json) %>"
+     style="position: relative;">
+  <label class="form-label"><%= label %><%= " *" if required %></label>
+  <div class="input-group">
+    <input type="text"
+           class="form-control"
+           placeholder="<%= placeholder %>"
+           value="<%= current_person&.full_name %>"
+           autocomplete="off"
+           data-person-autocomplete-target="input"
+           data-action="input->person-autocomplete#onInput keydown->person-autocomplete#onKeydown"
+    <%= "required" if required %>>
+    <input type="hidden"
+           name="<%= field_name %>"
+           value="<%= current_person&.id %>"
+           data-person-autocomplete-target="hidden">
+    <% if current_person %>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->person-autocomplete#clear" title="Clear">
+        <i class="ti ti-x"></i>
+      </button>
+    <% end %>
+  </div>
+  <div class="dropdown-menu w-100" style="position: absolute; top: 100%; z-index: 1000;"
+       data-person-autocomplete-target="results"></div>
+  <div data-person-autocomplete-target="createForm" style="display: none;"></div>
+</div>

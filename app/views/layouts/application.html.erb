@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <title><%= content_for(:title) || "Photos" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <!-- Tabler CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application' %>
+  </head>
+  <body class="theme-light">
+    <div class="page">
+      <%= render "layouts/shared/sidebar" %>
+      <div class="page-wrapper">
+        <% if notice.present? || alert.present? %>
+          <div class="container-xl mt-3">
+            <% if notice.present? %>
+              <div class="alert alert-success alert-dismissible" role="alert">
+                <%= notice %>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+              </div>
+            <% end %>
+            <% if alert.present? %>
+              <div class="alert alert-danger alert-dismissible" role="alert">
+                <%= alert %>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="page-header d-print-none">
+          <div class="container-xl">
+            <div class="row g-2 align-items-center">
+              <div class="col">
+                <% if content_for?(:page_title) %>
+                  <h2 class="page-title"><%= yield :page_title %></h2>
+                <% end %>
+                <% if content_for?(:page_subtitle) %>
+                  <div class="text-secondary"><%= yield :page_subtitle %></div>
+                <% end %>
+              </div>
+              <% if content_for?(:page_actions) %>
+                <div class="col-auto ms-auto">
+                  <%= yield :page_actions %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="page-body">
+          <div class="container-xl">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js" defer></script>
+  </body>
+</html>

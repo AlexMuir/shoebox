@@ -1,0 +1,40 @@
+<%= simple_form_for person do |f| %>
+  <div class="row">
+    <div class="col-md-6">
+      <fieldset class="form-fieldset">
+        <legend>Name</legend>
+        <div class="mb-3">
+          <%= f.input :first_name, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.input :last_name, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.input :maiden_name, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+      </fieldset>
+    </div>
+    <div class="col-md-6">
+      <fieldset class="form-fieldset">
+        <legend>Dates</legend>
+        <div class="mb-3">
+          <%= f.input :date_of_birth, as: :date, html5: true, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.input :date_of_death, as: :date, html5: true, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="mb-3">
+        <%= f.input :bio, as: :text, input_html: { class: 'form-control', rows: 5 }, label_html: { class: 'form-label' } %>
+      </div>
+    </div>
+  </div>
+  <div class="form-footer mt-4">
+    <%= link_to "Cancel", people_path, class: "btn btn-link" %>
+    <%= f.button :submit, class: "btn btn-primary" %>
+  </div>
+<% end %>

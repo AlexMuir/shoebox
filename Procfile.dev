@@ -1,0 +1,4 @@
+web: bin/rails server -p 3000
+css: bin/rails dartsass:watch
+vite: bin/vite dev
+jobs: bin/jobs

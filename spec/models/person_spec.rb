@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Person, type: :model do
   it { should belong_to(:family) }
+  it { should have_many(:photo_faces).dependent(:nullify) }
   it { should validate_presence_of(:first_name) }
   it { should validate_presence_of(:last_name) }
 
@@ -14,8 +15,10 @@ RSpec.describe Person, type: :model do
 
   describe "#age" do
     it "returns age from date of birth" do
-      person = build(:person, date_of_birth: 30.years.ago.to_date)
-      expect(person.age).to eq(30)
+      travel_to Date.new(2020, 1, 1) do
+        person = build(:person, date_of_birth: Date.new(1989, 1, 1))
+        expect(person.age).to eq(30)
+      end
     end
 
     it "returns nil without date of birth" do

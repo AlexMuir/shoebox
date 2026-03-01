@@ -8,6 +8,8 @@ class PhotosController < ApplicationController
   end
 
   def show
+    @photo.import_detected_faces!
+    @photo_faces = @photo.photo_faces.includes(:person).ordered
   end
 
   def new

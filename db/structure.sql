@@ -37,6 +37,20 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
 
 
+--
+-- Name: vector; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION vector; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION vector IS 'vector data type and ivfflat and hnsw access methods';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -234,6 +248,44 @@ ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
 
 
 --
+-- Name: face_regions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.face_regions (
+    id bigint NOT NULL,
+    photo_id bigint NOT NULL,
+    person_id bigint,
+    x double precision NOT NULL,
+    y double precision NOT NULL,
+    width double precision NOT NULL,
+    height double precision NOT NULL,
+    embedding public.vector(512),
+    confidence double precision,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: face_regions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.face_regions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: face_regions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.face_regions_id_seq OWNED BY public.face_regions.id;
+
+
+--
 -- Name: families; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -411,6 +463,50 @@ ALTER SEQUENCE public.people_id_seq OWNED BY public.people.id;
 
 
 --
+-- Name: photo_faces; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.photo_faces (
+    id bigint NOT NULL,
+    photo_id bigint NOT NULL,
+    person_id bigint,
+    tagged_by_id bigint,
+    x numeric(8,6) NOT NULL,
+    y numeric(8,6) NOT NULL,
+    width numeric(8,6) NOT NULL,
+    height numeric(8,6) NOT NULL,
+    confidence numeric(8,6),
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT photo_faces_height_range CHECK (((height > (0)::numeric) AND (height <= (1)::numeric))),
+    CONSTRAINT photo_faces_width_range CHECK (((width > (0)::numeric) AND (width <= (1)::numeric))),
+    CONSTRAINT photo_faces_x_range CHECK (((x >= (0)::numeric) AND (x <= (1)::numeric))),
+    CONSTRAINT photo_faces_x_width_range CHECK (((x + width) <= (1)::numeric)),
+    CONSTRAINT photo_faces_y_height_range CHECK (((y + height) <= (1)::numeric)),
+    CONSTRAINT photo_faces_y_range CHECK (((y >= (0)::numeric) AND (y <= (1)::numeric)))
+);
+
+
+--
+-- Name: photo_faces_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.photo_faces_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: photo_faces_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.photo_faces_id_seq OWNED BY public.photo_faces.id;
+
+
+--
 -- Name: photo_people; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -508,7 +604,10 @@ CREATE TABLE public.photos (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     file_modified_at timestamp(6) without time zone,
-    taken_at timestamp(6) without time zone
+    taken_at timestamp(6) without time zone,
+    faces_analyzed_at timestamp without time zone,
+    orientation_corrected boolean DEFAULT false,
+    orientation_correction integer DEFAULT 0
 );
 
 
@@ -686,6 +785,13 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 
 
 --
+-- Name: face_regions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.face_regions ALTER COLUMN id SET DEFAULT nextval('public.face_regions_id_seq'::regclass);
+
+
+--
 -- Name: families id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -718,6 +824,13 @@ ALTER TABLE ONLY public.login_codes ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.people_id_seq'::regclass);
+
+
+--
+-- Name: photo_faces id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photo_faces ALTER COLUMN id SET DEFAULT nextval('public.photo_faces_id_seq'::regclass);
 
 
 --
@@ -811,6 +924,14 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: face_regions face_regions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.face_regions
+    ADD CONSTRAINT face_regions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: families families_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -848,6 +969,14 @@ ALTER TABLE ONLY public.login_codes
 
 ALTER TABLE ONLY public.people
     ADD CONSTRAINT people_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: photo_faces photo_faces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photo_faces
+    ADD CONSTRAINT photo_faces_pkey PRIMARY KEY (id);
 
 
 --
@@ -984,6 +1113,20 @@ CREATE INDEX index_events_on_year_from ON public.events USING btree (year_from);
 
 
 --
+-- Name: index_face_regions_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_face_regions_on_person_id ON public.face_regions USING btree (person_id);
+
+
+--
+-- Name: index_face_regions_on_photo_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_face_regions_on_photo_id ON public.face_regions USING btree (photo_id);
+
+
+--
 -- Name: index_family_memberships_on_family_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1051,6 +1194,34 @@ CREATE INDEX index_people_on_family_id_and_last_name_and_first_name ON public.pe
 --
 
 CREATE INDEX index_people_on_user_id ON public.people USING btree (user_id);
+
+
+--
+-- Name: index_photo_faces_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_photo_faces_on_person_id ON public.photo_faces USING btree (person_id);
+
+
+--
+-- Name: index_photo_faces_on_photo_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_photo_faces_on_photo_id ON public.photo_faces USING btree (photo_id);
+
+
+--
+-- Name: index_photo_faces_on_photo_id_and_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_photo_faces_on_photo_id_and_person_id ON public.photo_faces USING btree (photo_id, person_id);
+
+
+--
+-- Name: index_photo_faces_on_tagged_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_photo_faces_on_tagged_by_id ON public.photo_faces USING btree (tagged_by_id);
 
 
 --
@@ -1240,6 +1411,14 @@ ALTER TABLE ONLY public.uploads
 
 
 --
+-- Name: face_regions fk_rails_1605e57d5a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.face_regions
+    ADD CONSTRAINT fk_rails_1605e57d5a FOREIGN KEY (photo_id) REFERENCES public.photos(id);
+
+
+--
 -- Name: photos fk_rails_1dee3b50b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1301,6 +1480,14 @@ ALTER TABLE ONLY public.photos
 
 ALTER TABLE ONLY public.photos
     ADD CONSTRAINT fk_rails_47f4e5f105 FOREIGN KEY (location_id) REFERENCES public.locations(id);
+
+
+--
+-- Name: photo_faces fk_rails_4cc5129401; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photo_faces
+    ADD CONSTRAINT fk_rails_4cc5129401 FOREIGN KEY (photo_id) REFERENCES public.photos(id);
 
 
 --
@@ -1400,6 +1587,14 @@ ALTER TABLE ONLY public.people
 
 
 --
+-- Name: photo_faces fk_rails_b77bdadfa9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photo_faces
+    ADD CONSTRAINT fk_rails_b77bdadfa9 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: photo_people fk_rails_bd6bd911d9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1413,6 +1608,14 @@ ALTER TABLE ONLY public.photo_people
 
 ALTER TABLE ONLY public.active_storage_attachments
     ADD CONSTRAINT fk_rails_c3b3935057 FOREIGN KEY (blob_id) REFERENCES public.active_storage_blobs(id);
+
+
+--
+-- Name: photo_faces fk_rails_c4331e7db2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photo_faces
+    ADD CONSTRAINT fk_rails_c4331e7db2 FOREIGN KEY (tagged_by_id) REFERENCES public.users(id);
 
 
 --
@@ -1440,6 +1643,14 @@ ALTER TABLE ONLY public.contributions
 
 
 --
+-- Name: face_regions fk_rails_e69c642dcb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.face_regions
+    ADD CONSTRAINT fk_rails_e69c642dcb FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: login_codes fk_rails_f8423fb01a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1454,6 +1665,10 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260301205107'),
+('20260301084500'),
+('20260301000002'),
+('20260301000001'),
 ('20260228223620'),
 ('20260228223125'),
 ('20260228222153'),

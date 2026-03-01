@@ -1,4 +1,5 @@
-web: bin/rails server -p 3000
+web: bin/rails server -p 3000 -b 0.0.0.0
 css: bin/rails dartsass:watch
 vite: bin/vite dev
 jobs: bin/jobs
+orientation: services/orientation/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8150 --app-dir services/orientation

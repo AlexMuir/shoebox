@@ -8,11 +8,36 @@
   </div>
 <% end %>
 <div class="row row-cards">
-  <div class="col-lg-8">
+  <div
+    class="col-lg-8"
+    data-controller="face-tagging"
+    data-face-tagging-update-url-template-value="<%= "/photos/#{@photo.id}/photo_faces/__FACE_ID__" %>"
+  >
     <div class="card">
       <div class="card-body p-0 text-center bg-dark">
         <% if @photo.image.attached? %>
-          <%= image_tag @photo.image.variant(:large), class: "img-fluid", style: "max-height: 80vh; object-fit: contain;" %>
+          <div class="photo-face-stage">
+            <%= image_tag @photo.oriented_variant(:large), class: "img-fluid photo-face-image", style: "max-height: 80vh; object-fit: contain;" %>
+            <div class="photo-face-layer">
+              <% @photo_faces.each do |photo_face| %>
+                <button
+                  type="button"
+                  class="photo-face-box <%= "is-tagged" if photo_face.person_id.present? %>"
+                  style="left: <%= (photo_face.x.to_f * 100).round(4) %>%; top: <%= (photo_face.y.to_f * 100).round(4) %>%; width: <%= (photo_face.width.to_f * 100).round(4) %>%; height: <%= (photo_face.height.to_f * 100).round(4) %>%"
+                  data-action="click->face-tagging#selectFace"
+                  data-face-tagging-target="faceBox"
+                  data-face-id="<%= photo_face.id %>"
+                  data-person-id="<%= photo_face.person_id %>"
+                  data-face-label="Face #<%= photo_face.id %>"
+                  aria-label="Select face <%= photo_face.id %>"
+                  >
+                  <% if photo_face.person.present? %>
+                    <span class="photo-face-label"><%= photo_face.person.full_name %></span>
+                  <% end %>
+                </button>
+              <% end %>
+            </div>
+          </div>
         <% else %>
           <div class="p-5 text-white">
             <i class="ti ti-photo" style="font-size: 5rem;"></i>
@@ -31,6 +56,33 @@
         <h3 class="card-title">People in this photo</h3>
       </div>
       <div class="card-body">
+        <div class="mb-4">
+          <h4 class="card-title mb-2">Face tagging (<%= @photo_faces.size %> detected)</h4>
+          <%= form_with url: "#", method: :patch, scope: :photo_face, html: { class: "d-flex gap-2 align-items-end", data: { face_tagging_target: "tagForm" } } do |f| %>
+            <div class="flex-fill">
+              <label class="form-label mb-1">Tagged person</label>
+              <%= f.select :person_id, options_for_select(current_family.people.alphabetical.map { |person| [ person.full_name, person.id ] }), { include_blank: "Untag this face" }, { class: "form-select", disabled: true, data: { face_tagging_target: "personSelect" } } %>
+            </div>
+            <%= f.submit "Save Face Tag", class: "btn btn-primary", disabled: true, data: { face_tagging_target: "submitButton" } %>
+          <% end %>
+          <% if @photo_faces.any? %>
+            <div class="text-secondary mt-2" data-face-tagging-target="statusText">Select a face box on the photo to tag it.</div>
+          <% else %>
+            <div class="alert alert-warning mt-3 mb-0" data-face-tagging-target="statusText">
+              No faces were detected for this photo yet. This interface appears as soon as the image metadata includes detected face boxes.
+            </div>
+          <% end %>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <% @photo_faces.each do |photo_face| %>
+              <div class="face-preview-tile">
+                <div class="face-preview-frame">
+                  <%= image_tag @photo.image.variant(:large), class: "face-preview-image", style: "--face-center-x: #{(photo_face.center_x * 100).round(3)}%; --face-center-y: #{(photo_face.center_y * 100).round(3)}%; --face-preview-zoom: #{photo_face.preview_zoom};" %>
+                </div>
+                <div class="face-preview-label"><%= photo_face.person&.full_name || "Untagged" %></div>
+              </div>
+            <% end %>
+          </div>
+        </div>
         <div class="d-flex flex-wrap gap-2 mb-3">
           <% @photo.photo_people.includes(:person).each do |photo_person| %>
             <span class="badge bg-primary-lt p-2">

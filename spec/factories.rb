@@ -125,4 +125,16 @@ FactoryBot.define do
     photo
     person
   end
+
+  factory :photo_face do
+    photo
+    x { 0.1 }
+    y { 0.1 }
+    width { 0.2 }
+    height { 0.2 }
+
+    trait :tagged do
+      person { association(:person, family: photo.family) }
+    end
+  end
 end

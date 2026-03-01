@@ -2,6 +2,7 @@ class Person < ApplicationRecord
   belongs_to :family
   belongs_to :user, optional: true
   has_many :photo_people, dependent: :destroy
+  has_many :photo_faces, dependent: :nullify
   has_many :photos, through: :photo_people
 
   validates :first_name, presence: true

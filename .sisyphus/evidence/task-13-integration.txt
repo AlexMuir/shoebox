@@ -1,0 +1,10 @@
+
+Photo processing pipeline
+  runs the full pipeline for EXIF image metadata and display variants
+  does not attach a working image when no rotation is needed
+  returns early without error when the photo has no original
+  discards missing photo records without error
+
+Finished in 0.30965 seconds (files took 0.59689 seconds to load)
+4 examples, 0 failures
+

@@ -63,3 +63,9 @@
 - Rotation path must keep a real IO open until `photo.save!`; closing the rotated file too early causes `IOError: closed stream` because Active Storage reads attachment IO during save.
 - EXIF `date_time_original` parsing (`%Y:%m:%d %H:%M:%S`) is applied to `taken_at` and fuzzy date fields (`year`, `month`, `day`, `date_type = "exact"`) in the job.
 - Spec coverage includes: metadata persistence, rotation attach behavior, non-rotation behavior, missing photo discard path, and no-original early return.
+
+## [2026-03-03] Task 13 - Integration Pipeline Spec
+- Added `spec/integration/photo_processing_spec.rb` covering end-to-end job behavior for metadata persistence, orientation handling, early returns, and `RecordNotFound` discard behavior.
+- For no-EXIF orientation fallback coverage, an in-spec minimal PNG `Tempfile` with raw PNG bytes is sufficient to exercise microservice fallback without attaching `working_image`.
+- Stubbed orientation microservice in integration spec with `allow_any_instance_of(PhotoProcessingJob).to receive(:post_image).and_return(double(is_a?: false, body: "{}"))` to keep test deterministic and network-free.
+- Saved evidence output for this task at `.sisyphus/evidence/task-13-integration.txt`.

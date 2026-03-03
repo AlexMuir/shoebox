@@ -13,7 +13,7 @@ class OrientationDetectionJob < ApplicationJob
 
   def perform(photo_id)
     photo = Photo.find(photo_id)
-    return unless photo.image.attached?
+    return unless photo.original.attached?
 
     rotation = detect_orientation(photo)
     photo.update_column(:orientation_correction, rotation) if rotation
@@ -22,7 +22,7 @@ class OrientationDetectionJob < ApplicationJob
   private
 
   def detect_orientation(photo)
-    photo.image.blob.open do |tempfile|
+    photo.original.blob.open do |tempfile|
       response = post_image(tempfile)
       body = JSON.parse(response.body)
 

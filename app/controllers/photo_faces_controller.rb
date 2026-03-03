@@ -7,9 +7,16 @@ class PhotoFacesController < ApplicationController
     @photo_face.tagged_by = Current.user if @photo_face.person_id.present?
 
     if @photo_face.save
-      redirect_to @photo, notice: "Face added."
+      @photo_face.reload
+      respond_to do |format|
+        format.html { redirect_to @photo, notice: "Face added." }
+        format.json { render json: photo_face_json(@photo_face), status: :created }
+      end
     else
-      redirect_to @photo, alert: "Could not add face."
+      respond_to do |format|
+        format.html { redirect_to @photo, alert: "Could not add face." }
+        format.json { render json: { errors: @photo_face.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -18,18 +25,39 @@ class PhotoFacesController < ApplicationController
     attributes[:tagged_by] = Current.user if attributes[:person_id].present?
 
     if @photo_face.update(attributes)
-      redirect_to @photo, notice: @photo_face.person_id.present? ? "Face tagged." : "Face untagged."
+      @photo_face.reload
+      respond_to do |format|
+        format.html { redirect_to @photo, notice: @photo_face.person_id.present? ? "Face tagged." : "Face untagged." }
+        format.json { render json: photo_face_json(@photo_face), status: :ok }
+      end
     else
-      redirect_to @photo, alert: "Could not update face tag."
+      respond_to do |format|
+        format.html { redirect_to @photo, alert: "Could not update face tag." }
+        format.json { render json: { errors: @photo_face.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @photo_face.destroy
-    redirect_to @photo, notice: "Face removed."
+    respond_to do |format|
+      format.html { redirect_to @photo, notice: "Face removed." }
+      format.json { render json: { success: true } }
+    end
   end
 
   private
+  def photo_face_json(face)
+    {
+      id: face.id,
+      x: face.x,
+      y: face.y,
+      width: face.width,
+      height: face.height,
+      person: face.person ? { id: face.person.id, name: face.person.full_name } : nil
+    }
+  end
+
 
   def set_photo
     @photo = current_family.photos.find(params[:photo_id])

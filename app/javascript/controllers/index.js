@@ -7,3 +7,5 @@ import FaceTaggingController from "./face_tagging_controller"
 application.register("face-tagging", FaceTaggingController)
 import LocationAutocompleteController from "./location_autocomplete_controller"
 application.register("location-autocomplete", LocationAutocompleteController)
+import PhotoViewController from "./photo_view_controller"
+application.register("photo-view", PhotoViewController)

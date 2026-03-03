@@ -75,18 +75,18 @@ RSpec.describe Photo, type: :model do
   end
 
   describe "callbacks" do
-    it "enqueues OrientationDetectionJob after creation" do
+    it "enqueues PhotoProcessingJob after creation" do
       expect {
         create(:photo)
-      }.to have_enqueued_job(OrientationDetectionJob)
+      }.to have_enqueued_job(PhotoProcessingJob)
     end
 
-    it "does not enqueue OrientationDetectionJob on update" do
+    it "does not enqueue PhotoProcessingJob on update" do
       photo = create(:photo)
 
       expect {
         photo.update!(title: "New title")
-      }.not_to have_enqueued_job(OrientationDetectionJob)
+      }.not_to have_enqueued_job(PhotoProcessingJob)
     end
   end
 

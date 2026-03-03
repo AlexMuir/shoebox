@@ -29,7 +29,7 @@ class Photo < ApplicationRecord
 
   before_save :extract_metadata, if: -> { original.attached? && image_changed? }
   after_commit :extract_dates_from_sources, on: :create, if: -> { original.attached? && taken_at.nil? }
-  after_commit :enqueue_orientation_detection, on: :create, if: -> { original.attached? }
+  after_commit :enqueue_photo_processing, on: :create, if: -> { original.attached? }
 
   scope :chronological, -> { order(year: :asc, month: :asc, day: :asc) }
   scope :reverse_chronological, -> { order(year: :desc, month: :desc, day: :desc) }
@@ -97,9 +97,10 @@ class Photo < ApplicationRecord
     original.blob&.previously_new_record? || attachment_changes["original"].present?
   end
 
-  def enqueue_orientation_detection
-    OrientationDetectionJob.perform_later(id)
+  def enqueue_photo_processing
+    PhotoProcessingJob.perform_later(id)
   end
+
 
 
   def extract_metadata

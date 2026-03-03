@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrientationDetectionJob < ApplicationJob
   queue_as :default
 
@@ -12,6 +14,8 @@ class OrientationDetectionJob < ApplicationJob
   )
 
   def perform(photo_id)
+    Rails.logger.warn("DEPRECATED: OrientationDetectionJob is replaced by PhotoProcessingJob")
+    photo = Photo.find(photo_id)
     photo = Photo.find(photo_id)
     return unless photo.original.attached?
 

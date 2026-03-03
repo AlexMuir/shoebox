@@ -21,7 +21,12 @@ Rails.application.routes.draw do
     end
   end
   resources :events
-  resources :locations
+  resources :locations do
+    collection do
+      get :search
+      post :create_from_google
+    end
+  end
   resources :uploads, only: [ :index, :show, :new, :create, :edit, :update ]
 
   post "families/:id/switch", to: "families#switch", as: :switch_family

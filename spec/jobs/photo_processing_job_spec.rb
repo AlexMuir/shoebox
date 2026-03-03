@@ -48,7 +48,9 @@ RSpec.describe PhotoProcessingJob, type: :job do
       described_class.perform_now(photo.id)
 
       photo.reload
-      expect(photo.image_metadata).to include(exif: include(orientation: 1, date_time_original: "2020:07:14 11:22:33"))
+      expect(photo.image_metadata).to include(
+        "exif" => include("orientation" => 1, "date_time_original" => "2020:07:14 11:22:33")
+      )
       expect(photo.taken_at).to be_present
       expect(photo.year).to eq(2020)
       expect(photo.month).to eq(7)

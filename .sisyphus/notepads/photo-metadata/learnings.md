@@ -56,3 +56,10 @@
 - ViewComponent tests without Capybara can use `rendered_content` instead of `page` to check the output string.
 - `ViewComponent::TestHelpers` needs to be included in the RSpec component tests if not globally configured.
 - Tabler's collapse functionality works well with `data-bs-toggle="collapse"` and `data-bs-target="#id"`.
+
+## [2026-03-03] Task 6 - PhotoProcessingJob TDD
+- `PhotoProcessingJob` now centralizes metadata extraction and orientation handling from `photo.original`, replacing orientation-only behavior for this flow.
+- EXIF orientation map used in job: `1 => 0`, `3 => 180`, `6 => 90`, `8 => 270`; when EXIF is `nil`/`1`, the job falls back to the orientation microservice (`post_image` + multipart helpers copied from OrientationDetectionJob pattern).
+- Rotation path must keep a real IO open until `photo.save!`; closing the rotated file too early causes `IOError: closed stream` because Active Storage reads attachment IO during save.
+- EXIF `date_time_original` parsing (`%Y:%m:%d %H:%M:%S`) is applied to `taken_at` and fuzzy date fields (`year`, `month`, `day`, `date_type = "exact"`) in the job.
+- Spec coverage includes: metadata persistence, rotation attach behavior, non-rotation behavior, missing photo discard path, and no-original early return.

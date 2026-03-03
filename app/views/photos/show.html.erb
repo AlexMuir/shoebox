@@ -223,5 +223,23 @@
         </div>
       </div>
     <% end %>
+    <% if @photo.image_metadata.present? %>
+      <div class="card mt-3">
+        <div class="card-header" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#exif-data-section">
+          <h3 class="card-title">
+            <i class="ti ti-info-circle icon me-2"></i>
+            Photo Metadata
+          </h3>
+          <div class="card-options">
+            <i class="ti ti-chevron-down"></i>
+          </div>
+        </div>
+        <div id="exif-data-section" class="collapse">
+          <div class="card-body p-0">
+            <%= render ExifDataComponent.new(photo: @photo) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

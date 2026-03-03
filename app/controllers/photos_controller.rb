@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PhotosController < ApplicationController
   before_action :set_photo, only: [ :show, :edit, :update, :destroy ]
 
@@ -21,6 +23,7 @@ class PhotosController < ApplicationController
     @photo.uploaded_by = Current.user
 
     if @photo.save
+      PhotoProcessingJob.perform_later(@photo.id)
       redirect_to @photo, notice: "Photo uploaded successfully."
     else
       render :new, status: :unprocessable_entity
@@ -51,7 +54,7 @@ class PhotosController < ApplicationController
 
   def photo_params
     params.expect(photo: [
-      :title, :description, :image, :event_id, :location_id, :photographer_id,
+      :title, :description, :original, :event_id, :location_id, :photographer_id,
       :date_type, :year, :month, :day, :season, :circa, :date_display
     ])
   end

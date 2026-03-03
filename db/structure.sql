@@ -369,7 +369,8 @@ CREATE TABLE public.locations (
     ancestry character varying COLLATE pg_catalog."C",
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    google_place_id character varying
+    google_place_id character varying,
+    manual boolean DEFAULT false NOT NULL
 );
 
 
@@ -608,7 +609,8 @@ CREATE TABLE public.photos (
     taken_at timestamp(6) without time zone,
     faces_analyzed_at timestamp without time zone,
     orientation_corrected boolean DEFAULT false,
-    orientation_correction integer DEFAULT 0
+    orientation_correction integer DEFAULT 0,
+    image_metadata jsonb DEFAULT '{}'::jsonb
 );
 
 
@@ -1673,6 +1675,9 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260303203131'),
+('20260303142058'),
+('20260303135826'),
 ('20260303123553'),
 ('20260301205107'),
 ('20260301084500'),

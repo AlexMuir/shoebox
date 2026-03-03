@@ -23,7 +23,8 @@ export function PhotoViewModal({
   setIsFullscreen,
   setZoomLevel,
   setIsTagMode,
-  csrfToken
+  csrfToken,
+  loadError
 }) {
   // Handle body scroll lock and URL restoration
   useEffect(() => {
@@ -99,7 +100,23 @@ export function PhotoViewModal({
       <div className="photo-view-modal__content">
         <div className="photo-view-modal__image-area">
           {isLoading ? (
-            <div className="photo-view-modal__loading">Loading...</div>
+            <div className="photo-view-modal__loading">
+              <div className="photo-view-modal__spinner" />
+            </div>
+          ) : loadError === 'not_found' ? (
+            <div className="photo-view-modal__error">
+              <p>Photo not found.</p>
+              <button onClick={onClose}>Close</button>
+            </div>
+          ) : loadError === 'network_error' ? (
+            <div className="photo-view-modal__error">
+              <p>Failed to load photo. Please try again.</p>
+            </div>
+          ) : !photoData?.image_url ? (
+            <div className="photo-view-modal__no-image">
+              <i className="ti ti-photo" />
+              <p>No image attached</p>
+            </div>
           ) : (
             <PhotoImage
               imageUrl={photoData?.image_url}

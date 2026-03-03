@@ -10,13 +10,20 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
   const [zoomLevel, setZoomLevel] = useState(0)
   const [isTagMode, setIsTagMode] = useState(false)
   const [pendingFace, setPendingFace] = useState(null)
+  const [loadError, setLoadError] = useState(null)
 
   const loadPhoto = useCallback(async (id) => {
     setIsLoading(true)
+    setLoadError(null)
     try {
       const data = await fetchPhoto(id)
       setPhotoData(data)
     } catch (error) {
+      if (error.message && error.message.includes('404')) {
+        setLoadError('not_found')
+      } else {
+        setLoadError('network_error')
+      }
       console.error('Failed to fetch photo:', error)
     } finally {
       setIsLoading(false)
@@ -120,6 +127,7 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
       onFaceCreated={handleFaceCreated}
       onCancelPendingFace={handleCancelPendingFace}
       csrfToken={csrfToken}
+      loadError={loadError}
     />
   )
 }

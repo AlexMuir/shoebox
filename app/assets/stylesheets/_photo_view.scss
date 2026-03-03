@@ -304,8 +304,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.photo-view-modal__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: photo-view-spin 0.8s linear infinite;
+}
+
+@keyframes photo-view-spin {
+  to { transform: rotate(360deg); }
+}
+
+.photo-view-modal__error,
+.photo-view-modal__no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  font-size: 1.5rem;
+  gap: 12px;
+  font-size: 1rem;
+}
+
+.photo-view-modal__no-image i {
+  font-size: 3rem;
+  opacity: 0.5;
 }
 
 .photo-view-modal--fullscreen .photo-view-modal__sidebar {

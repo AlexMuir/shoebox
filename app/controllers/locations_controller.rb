@@ -5,6 +5,40 @@ class LocationsController < ApplicationController
     @locations = current_family.locations.roots.alphabetical
   end
 
+  def search
+    query = params[:q].to_s
+    if query.blank? || query.length < 2
+      return render json: { local: [], google: [] }
+    end
+
+    local_results = current_family.locations
+      .where("name ILIKE :q", q: "%#{query}%")
+      .alphabetical
+      .limit(5)
+      .map { |loc| { id: loc.id, name: loc.name, parent_name: loc.parent&.name } }
+
+    google_results = []
+    if params[:session_token].present?
+      google_results = GooglePlacesService.new.autocomplete(query, params[:session_token])
+    end
+
+    render json: { local: local_results, google: google_results }
+  end
+
+  def create_from_google
+    place_details = GooglePlacesService.new.place_details(
+      params[:place_id],
+      params[:session_token]
+    )
+
+    if place_details.nil?
+      return render json: { error: "Place not found" }, status: :unprocessable_entity
+    end
+
+    location = LocationHierarchyService.call(current_family, place_details)
+    render json: { id: location.id, name: location.name }
+  end
+
   def show
     @photos = @location.photos.recent
     @events = @location.events.reverse_chronological

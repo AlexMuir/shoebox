@@ -167,16 +167,28 @@ export function PhotoImage({
                   pointerEvents: isTagMode ? 'auto' : 'none'
                 }}
                 onClick={(event) => {
-                  if (!isTagMode || !onFaceClick) {
+                  if (!isTagMode) {
                     return
                   }
 
                   event.stopPropagation()
-                  onFaceClick(face.id)
                 }}
               >
                 {face.person && (
                   <span className="photo-view-modal__face-label">{face.person.name}</span>
+                )}
+                {isTagMode && (
+                  <button
+                    type="button"
+                    className="photo-view-modal__face-remove"
+                    onClick={(event) => {
+                      if (!onFaceClick) return
+                      event.stopPropagation()
+                      onFaceClick(face.id)
+                    }}
+                  >
+                    <i className="ti ti-x" />
+                  </button>
                 )}
               </div>
             )

@@ -17,6 +17,7 @@ export function PhotoViewModal({
   onClose,
   onNavigate,
   onImageClick,
+  onFaceClick,
   onFaceCreated,
   onCancelPendingFace,
   setIsFullscreen,
@@ -63,8 +64,23 @@ export function PhotoViewModal({
   const prevId = photoData?.prev_id
   const nextId = photoData?.next_id
 
+  const handleModalClick = (event) => {
+    if (!isTagMode || !pendingFace) return
+
+    const sidebar = event.currentTarget.querySelector('.photo-view-modal__sidebar')
+    if (sidebar && sidebar.contains(event.target)) return
+
+    const autocomplete = event.currentTarget.querySelector('.photo-view-modal__autocomplete')
+    if (autocomplete && autocomplete.contains(event.target)) return
+
+    const imageArea = event.currentTarget.querySelector('.photo-view-modal__image-area')
+    if (imageArea && imageArea.contains(event.target)) return
+
+    onCancelPendingFace()
+  }
+
   return (
-    <div className={`photo-view-modal ${isFullscreen ? 'photo-view-modal--fullscreen' : ''}`}>
+    <div className={`photo-view-modal ${isFullscreen ? 'photo-view-modal--fullscreen' : ''}`} onClick={handleModalClick}>
       <button className="photo-view-modal__close" onClick={onClose}>
         <i className="ti ti-x" />
       </button>
@@ -92,7 +108,7 @@ export function PhotoViewModal({
               faces={photoData?.faces || []}
               pendingFace={pendingFace}
               onImageClick={onImageClick}
-              onFaceClick={() => {}}
+              onFaceClick={onFaceClick}
             />
           )}
           <PhotoNavigation

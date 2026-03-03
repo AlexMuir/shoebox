@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { PhotoViewModal } from './PhotoViewModal'
-import { createFace, fetchPhoto } from './api'
+import { createFace, deleteFace, fetchPhoto } from './api'
 
 export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
   const [currentPhotoId, setCurrentPhotoId] = useState(photoId)
@@ -69,6 +69,18 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
     setPendingFace(null)
   }, [])
 
+  const handleFaceClick = useCallback(async (faceId) => {
+    if (!isTagMode) return
+
+    try {
+      await deleteFace(currentPhotoId, faceId, csrfToken)
+      const updatedPhoto = await fetchPhoto(currentPhotoId)
+      setPhotoData(updatedPhoto)
+    } catch (error) {
+      console.error('Failed to delete face:', error)
+    }
+  }, [isTagMode, currentPhotoId, csrfToken])
+
   const handleNavigate = useCallback((direction) => {
     if (!photoIds || photoIds.length === 0) return
 
@@ -104,6 +116,7 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
       setIsTagMode={setIsTagMode}
       pendingFace={pendingFace}
       onImageClick={handleImageClick}
+      onFaceClick={handleFaceClick}
       onFaceCreated={handleFaceCreated}
       onCancelPendingFace={handleCancelPendingFace}
       csrfToken={csrfToken}

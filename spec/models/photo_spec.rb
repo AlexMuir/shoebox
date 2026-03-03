@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Photo, type: :model do
   describe "#import_detected_faces!" do
     it "creates face records from normalized metadata" do
       photo = create(:photo, width: 2000, height: 1000)
-      metadata = photo.image.blob.metadata.merge(
+      metadata = photo.original.blob.metadata.merge(
         "detected_faces" => [
           { "x" => 0.1, "y" => 0.2, "width" => 0.25, "height" => 0.3, "confidence" => 0.95 },
           { "left" => 800, "top" => 100, "width" => 300, "height" => 250 }
         ]
       )
-      photo.image.blob.update!(metadata: metadata)
+      photo.original.blob.update!(metadata: metadata)
 
       expect { photo.import_detected_faces! }.to change(photo.photo_faces, :count).by(2)
 
@@ -30,7 +32,7 @@ RSpec.describe Photo, type: :model do
 
     it "imports Rekognition-style face details" do
       photo = create(:photo, width: 1000, height: 500)
-      metadata = photo.image.blob.metadata.merge(
+      metadata = photo.original.blob.metadata.merge(
         "rekognition" => {
           "face_details" => [
             {
@@ -45,7 +47,7 @@ RSpec.describe Photo, type: :model do
           ]
         }
       )
-      photo.image.blob.update!(metadata: metadata)
+      photo.original.blob.update!(metadata: metadata)
 
       expect { photo.import_detected_faces! }.to change(photo.photo_faces, :count).by(1)
 
@@ -59,12 +61,12 @@ RSpec.describe Photo, type: :model do
 
     it "does not create duplicate faces when imported multiple times" do
       photo = create(:photo, width: 1600, height: 900)
-      metadata = photo.image.blob.metadata.merge(
+      metadata = photo.original.blob.metadata.merge(
         "detected_faces" => [
           { "x" => 0.2, "y" => 0.15, "width" => 0.2, "height" => 0.2 }
         ]
       )
-      photo.image.blob.update!(metadata: metadata)
+      photo.original.blob.update!(metadata: metadata)
 
       photo.import_detected_faces!
 
@@ -85,6 +87,45 @@ RSpec.describe Photo, type: :model do
       expect {
         photo.update!(title: "New title")
       }.not_to have_enqueued_job(OrientationDetectionJob)
+    end
+  end
+
+  describe "attachments" do
+    it "uses original as the source attachment" do
+      photo = build(:photo)
+
+      expect(photo.original).to be_attached
+      expect(photo).not_to respond_to(:image)
+    end
+
+    it "has a working_image attachment" do
+      photo = build(:photo)
+
+      expect(photo).to respond_to(:working_image)
+      expect(photo.working_image).not_to be_attached
+    end
+
+    it "returns working_image when attached" do
+      photo = create(:photo)
+      photo.working_image.attach(
+        io: StringIO.new("working image"),
+        filename: "working.jpg",
+        content_type: "image/jpeg"
+      )
+
+      expect(photo.display_image).to eq(photo.working_image)
+    end
+
+    it "falls back to original when working_image is not attached" do
+      photo = create(:photo)
+
+      expect(photo.display_image).to eq(photo.original)
+    end
+
+    it "exposes image_metadata as a hash" do
+      photo = build(:photo)
+
+      expect(photo.image_metadata).to be_a(Hash)
     end
   end
 

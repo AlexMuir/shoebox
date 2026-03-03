@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :family do
     sequence(:name) { |n| "Family #{n}" }
@@ -87,8 +89,8 @@ FactoryBot.define do
     title { "Photo #{SecureRandom.hex(3)}" }
 
     after(:build) do |photo|
-      unless photo.image.attached?
-        photo.image.attach(
+      unless photo.original.attached?
+        photo.original.attach(
           io: StringIO.new("fake image data"),
           filename: "test_photo.jpg",
           content_type: "image/jpeg"

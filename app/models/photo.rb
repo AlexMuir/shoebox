@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Photo < ApplicationRecord
   include HasFuzzyDate
 
@@ -8,7 +10,8 @@ class Photo < ApplicationRecord
   belongs_to :uploaded_by, class_name: "User", optional: true
   belongs_to :upload, optional: true, counter_cache: :photos_count
 
-  has_one_attached :image do |attachable|
+  has_one_attached :original
+  has_one_attached :working_image do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 200, 200 ]
     attachable.variant :medium, resize_to_limit: [ 800, 800 ]
     attachable.variant :large, resize_to_limit: [ 1600, 1600 ]
@@ -22,11 +25,11 @@ class Photo < ApplicationRecord
 
   fuzzy_date_fields prefix: nil, fields: %i[date_type year month day season circa]
 
-  validates :image, presence: true, on: :create
+  validates :original, presence: true, on: :create
 
-  before_save :extract_metadata, if: -> { image.attached? && image_changed? }
-  after_commit :extract_dates_from_sources, on: :create, if: -> { image.attached? && taken_at.nil? }
-  after_commit :enqueue_orientation_detection, on: :create, if: -> { image.attached? }
+  before_save :extract_metadata, if: -> { original.attached? && image_changed? }
+  after_commit :extract_dates_from_sources, on: :create, if: -> { original.attached? && taken_at.nil? }
+  after_commit :enqueue_orientation_detection, on: :create, if: -> { original.attached? }
 
   scope :chronological, -> { order(year: :asc, month: :asc, day: :asc) }
   scope :reverse_chronological, -> { order(year: :desc, month: :desc, day: :desc) }
@@ -39,6 +42,10 @@ class Photo < ApplicationRecord
 
   def display_title
     title.presence || original_filename.presence || "Untitled Photo"
+  end
+
+  def display_image
+    working_image.attached? ? working_image : original
   end
 
   def orientation_corrected?
@@ -61,18 +68,13 @@ class Photo < ApplicationRecord
   }.freeze
 
   def oriented_variant(name)
-    options = VARIANT_OPTIONS.fetch(name)
-    if orientation_corrected?
-      image.variant(rotate: orientation_correction, **options)
-    else
-      image.variant(name)
-    end
+    display_image.variant(VARIANT_OPTIONS.fetch(name))
   end
 
   def import_detected_faces!
-    return unless image.attached?
+    return unless original.attached?
 
-    detected_faces = extract_detected_faces(image.blob.metadata)
+    detected_faces = extract_detected_faces(original.blob.metadata)
     return if detected_faces.empty?
 
     existing_signatures = photo_faces.map { |face| face_signature(face.attributes.symbolize_keys) }.to_set
@@ -92,7 +94,7 @@ class Photo < ApplicationRecord
   private
 
   def image_changed?
-    image.blob&.previously_new_record? || attachment_changes["image"].present?
+    original.blob&.previously_new_record? || attachment_changes["original"].present?
   end
 
   def enqueue_orientation_detection
@@ -101,8 +103,8 @@ class Photo < ApplicationRecord
 
 
   def extract_metadata
-    return unless image.attached?
-    blob = image.blob
+    return unless original.attached?
+    blob = original.blob
     self.original_filename ||= blob.filename.to_s
     self.content_type = blob.content_type
     self.file_size = blob.byte_size
@@ -122,7 +124,7 @@ class Photo < ApplicationRecord
   end
 
   def extract_exif_taken_at
-    image.blob.open do |tempfile|
+    original.blob.open do |tempfile|
       vips_image = Vips::Image.new_from_file(tempfile.path)
       raw = vips_image.get("exif-ifd2-DateTimeOriginal").to_s
       date_str = raw[/\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2}/]

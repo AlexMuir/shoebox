@@ -1675,6 +1675,7 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260303204250'),
 ('20260303203131'),
 ('20260303142058'),
 ('20260303135826'),

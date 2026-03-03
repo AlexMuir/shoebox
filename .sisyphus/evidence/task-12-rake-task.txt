@@ -1,0 +1,1 @@
+bin/rails photos:backfill  # Backfill metadata and working images for existing photos

@@ -69,13 +69,16 @@ class UploadsController < ApplicationController
         year: upload.year_from,
         file_modified_at: file_modified_at
       )
-      photo.image.attach(file)
+      photo.original.attach(file)
 
-      if photo.save && upload.source_album.present?
-        photo.photo_sources.create!(
-          description: upload.source_album,
-          notes: [ upload.source_owner&.full_name, upload.scanned_by_person&.full_name ].compact.join(", scanned by ")
-        )
+      if photo.save
+        PhotoProcessingJob.perform_later(photo.id)
+        if upload.source_album.present?
+          photo.photo_sources.create!(
+            description: upload.source_album,
+            notes: [ upload.source_owner&.full_name, upload.scanned_by_person&.full_name ].compact.join(", scanned by ")
+          )
+        end
       end
     end
   end

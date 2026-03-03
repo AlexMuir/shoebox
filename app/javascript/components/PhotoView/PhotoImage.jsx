@@ -21,6 +21,7 @@ export function PhotoImage({
   zoomLevel,
   isTagMode,
   faces,
+  pendingFace = null,
   onImageClick,
   onFaceClick
 }) {
@@ -180,6 +181,18 @@ export function PhotoImage({
               </div>
             )
           })}
+
+          {pendingFace && (
+            <div
+              className="photo-view-modal__face-box photo-view-modal__face-box--pending"
+              style={{
+                left: `${pendingFace.x * 100}%`,
+                top: `${pendingFace.y * 100}%`,
+                width: `${pendingFace.width * 100}%`,
+                height: `${pendingFace.height * 100}%`
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

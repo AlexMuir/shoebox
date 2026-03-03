@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PhotoViewModal } from './PhotoViewModal'
-import { fetchPhoto } from './api'
+import { createFace, fetchPhoto } from './api'
 
 export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
   const [currentPhotoId, setCurrentPhotoId] = useState(photoId)
@@ -9,6 +9,7 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(0)
   const [isTagMode, setIsTagMode] = useState(false)
+  const [pendingFace, setPendingFace] = useState(null)
 
   const loadPhoto = useCallback(async (id) => {
     setIsLoading(true)
@@ -35,7 +36,38 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
   useEffect(() => {
     setZoomLevel(0)
     setIsTagMode(false)
+    setPendingFace(null)
   }, [currentPhotoId])
+
+  const handleImageClick = useCallback((normalizedX, normalizedY) => {
+    if (!isTagMode) return
+
+    const width = 0.1
+    const height = 0.1
+    const x = Math.max(0, Math.min(1 - width, normalizedX - width / 2))
+    const y = Math.max(0, Math.min(1 - height, normalizedY - height / 2))
+
+    setPendingFace({ x, y, width, height })
+  }, [isTagMode])
+
+  const handleFaceCreated = useCallback(async (personId, _personName) => {
+    if (!pendingFace) return
+
+    try {
+      const faceData = { ...pendingFace, person_id: personId }
+      await createFace(currentPhotoId, faceData, csrfToken)
+      const updatedPhoto = await fetchPhoto(currentPhotoId)
+      setPhotoData(updatedPhoto)
+      setPendingFace(null)
+    } catch (error) {
+      console.error('Failed to create face:', error)
+      setPendingFace(null)
+    }
+  }, [pendingFace, currentPhotoId, csrfToken])
+
+  const handleCancelPendingFace = useCallback(() => {
+    setPendingFace(null)
+  }, [])
 
   const handleNavigate = useCallback((direction) => {
     if (!photoIds || photoIds.length === 0) return
@@ -70,7 +102,10 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
       setIsFullscreen={setIsFullscreen}
       setZoomLevel={setZoomLevel}
       setIsTagMode={setIsTagMode}
-      photoIds={photoIds}
+      pendingFace={pendingFace}
+      onImageClick={handleImageClick}
+      onFaceCreated={handleFaceCreated}
+      onCancelPendingFace={handleCancelPendingFace}
       csrfToken={csrfToken}
     />
   )

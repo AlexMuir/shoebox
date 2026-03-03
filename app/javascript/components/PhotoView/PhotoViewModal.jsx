@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { PhotoImage } from './PhotoImage'
 import { PhotoToolbar } from './PhotoToolbar'
 import { PhotoSidebar } from './PhotoSidebar'
 import { PhotoNavigation } from './PhotoNavigation'
 import { TagOverlay } from './TagOverlay'
+import { PersonAutocomplete } from './PersonAutocomplete'
 
 export function PhotoViewModal({
   currentPhotoId,
@@ -12,12 +13,15 @@ export function PhotoViewModal({
   isFullscreen,
   zoomLevel,
   isTagMode,
+  pendingFace,
   onClose,
   onNavigate,
+  onImageClick,
+  onFaceCreated,
+  onCancelPendingFace,
   setIsFullscreen,
   setZoomLevel,
   setIsTagMode,
-  photoIds,
   csrfToken
 }) {
   // Handle body scroll lock and URL restoration
@@ -86,7 +90,8 @@ export function PhotoViewModal({
               zoomLevel={zoomLevel}
               isTagMode={isTagMode}
               faces={photoData?.faces || []}
-              onImageClick={() => {}}
+              pendingFace={pendingFace}
+              onImageClick={onImageClick}
               onFaceClick={() => {}}
             />
           )}
@@ -97,6 +102,12 @@ export function PhotoViewModal({
             isTagMode={isTagMode}
           />
           <TagOverlay isTagMode={isTagMode} onFinishTagging={() => setIsTagMode(false)} />
+          <PersonAutocomplete
+            pendingFace={pendingFace}
+            onPersonSelected={onFaceCreated}
+            onCancel={onCancelPendingFace}
+            csrfToken={csrfToken}
+          />
         </div>
         
         {!isFullscreen && (

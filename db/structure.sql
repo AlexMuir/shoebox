@@ -368,7 +368,8 @@ CREATE TABLE public.locations (
     longitude numeric(10,6),
     ancestry character varying COLLATE pg_catalog."C",
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    google_place_id character varying
 );
 
 
@@ -1162,6 +1163,13 @@ CREATE INDEX index_locations_on_family_id ON public.locations USING btree (famil
 
 
 --
+-- Name: index_locations_on_family_id_and_google_place_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_locations_on_family_id_and_google_place_id ON public.locations USING btree (family_id, google_place_id) WHERE (google_place_id IS NOT NULL);
+
+
+--
 -- Name: index_locations_on_family_id_and_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1665,6 +1673,7 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260303123553'),
 ('20260301205107'),
 ('20260301084500'),
 ('20260301000002'),

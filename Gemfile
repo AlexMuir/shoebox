@@ -41,6 +41,8 @@ gem "resend"
 
 group :test do
   gem "shoulda-matchers"
+  gem "webmock"
+  gem "shoulda-matchers"
 end
 
 group :development, :test do

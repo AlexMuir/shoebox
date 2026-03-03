@@ -1,0 +1,15 @@
+
+ExifDataComponent
+  when metadata is present
+    renders the component with metadata sections
+    displays formatted file size
+    displays specific metadata values
+    excludes sensitive or internal keys
+  when metadata is empty
+    renders a 'No metadata available' message
+  when metadata is nil
+    renders a 'No metadata available' message
+
+Finished in 0.12292 seconds (files took 0.5986 seconds to load)
+6 examples, 0 failures
+

@@ -1,0 +1,22 @@
+
+An error occurred while loading ./spec/jobs/photo_processing_job_spec.rb.
+Failure/Error:
+  RSpec.describe PhotoProcessingJob, type: :job do
+    let(:fixture_image_path) { Rails.root.join("spec/fixtures/photos/orientation/1_-90deg.jpg") }
+  
+    def attach_fixture_image(photo)
+      photo.original.attach(
+        io: File.open(fixture_image_path),
+        filename: "1_-90deg.jpg",
+        content_type: "image/jpeg"
+      )
+    end
+
+NameError:
+  uninitialized constant PhotoProcessingJob
+# ./spec/jobs/photo_processing_job_spec.rb:5:in `<top (required)>'
+No examples found.
+
+Finished in 0.00003 seconds (files took 0.60551 seconds to load)
+0 examples, 0 failures, 1 error occurred outside of examples
+

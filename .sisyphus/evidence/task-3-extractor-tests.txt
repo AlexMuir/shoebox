@@ -1,0 +1,10 @@
+
+Photo::MetadataExtractor
+  .call
+    returns the expected metadata structure for a JPEG with EXIF
+    returns an empty exif hash for a file without exif
+    logs a warning and returns partial metadata when MiniExiftool fails
+
+Finished in 0.14071 seconds (files took 0.59856 seconds to load)
+3 examples, 0 failures
+

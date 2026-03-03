@@ -15,9 +15,9 @@
   >
     <div class="card">
       <div class="card-body p-0 text-center bg-dark">
-        <% if @photo.image.attached? %>
+        <% if @photo.original.attached? %>
           <div class="photo-face-stage">
-            <%= image_tag @photo.oriented_variant(:large), class: "img-fluid photo-face-image", style: "max-height: 80vh; object-fit: contain;" %>
+            <%= image_tag @photo.display_image.variant(:large), class: "img-fluid photo-face-image", style: "max-height: 80vh; object-fit: contain;" %>
             <div class="photo-face-layer">
               <% @photo_faces.each do |photo_face| %>
                 <button
@@ -76,7 +76,7 @@
             <% @photo_faces.each do |photo_face| %>
               <div class="face-preview-tile">
                 <div class="face-preview-frame">
-                  <%= image_tag @photo.image.variant(:large), class: "face-preview-image", style: "--face-center-x: #{(photo_face.center_x * 100).round(3)}%; --face-center-y: #{(photo_face.center_y * 100).round(3)}%; --face-preview-zoom: #{photo_face.preview_zoom};" %>
+                  <%= image_tag @photo.display_image.variant(:large), class: "face-preview-image", style: "--face-center-x: #{(photo_face.center_x * 100).round(3)}%; --face-center-y: #{(photo_face.center_y * 100).round(3)}%; --face-preview-zoom: #{photo_face.preview_zoom};" %>
                 </div>
                 <div class="face-preview-label"><%= photo_face.person&.full_name || "Untagged" %></div>
               </div>

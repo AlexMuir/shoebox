@@ -16,8 +16,8 @@
     <div class="col-sm-6 col-md-4 col-lg-3">
       <div class="card card-sm">
         <%= link_to photo_path(photo), class: "d-block" do %>
-          <% if photo.image.attached? %>
-            <%= image_tag photo.image.variant(:thumb), class: "card-img-top", style: "aspect-ratio: 1/1; object-fit: cover;" %>
+          <% if photo.original.attached? %>
+            <%= image_tag photo.display_image.variant(:thumb), class: "card-img-top", style: "aspect-ratio: 1/1; object-fit: cover;" %>
           <% else %>
             <div class="card-img-top bg-secondary-lt d-flex align-items-center justify-content-center" style="aspect-ratio: 1/1;">
               <i class="ti ti-photo text-secondary" style="font-size: 3rem;"></i>

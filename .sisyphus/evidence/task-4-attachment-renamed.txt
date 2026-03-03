@@ -1,0 +1,22 @@
+
+Photo
+  #import_detected_faces!
+    creates face records from normalized metadata
+    imports Rekognition-style face details
+    does not create duplicate faces when imported multiple times
+  callbacks
+    enqueues OrientationDetectionJob after creation
+    does not enqueue OrientationDetectionJob on update
+  attachments
+    uses original as the source attachment
+    has a working_image attachment
+    returns working_image when attached
+    falls back to original when working_image is not attached
+    exposes image_metadata as a hash
+  #oriented_variant
+    returns the named variant when no correction needed
+    applies rotation when correction is set
+
+Finished in 0.12458 seconds (files took 0.58963 seconds to load)
+12 examples, 0 failures
+

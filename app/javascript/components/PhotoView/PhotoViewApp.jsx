@@ -26,6 +26,17 @@ export function PhotoViewApp({ photoId, photoIds, csrfToken, onClose }) {
     loadPhoto(currentPhotoId)
   }, [currentPhotoId, loadPhoto])
 
+  useEffect(() => {
+    if (zoomLevel > 0) {
+      setIsTagMode(false)
+    }
+  }, [zoomLevel])
+
+  useEffect(() => {
+    setZoomLevel(0)
+    setIsTagMode(false)
+  }, [currentPhotoId])
+
   const handleNavigate = useCallback((direction) => {
     if (!photoIds || photoIds.length === 0) return
 

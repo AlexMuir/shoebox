@@ -3,6 +3,7 @@ import { PhotoImage } from './PhotoImage'
 import { PhotoToolbar } from './PhotoToolbar'
 import { PhotoSidebar } from './PhotoSidebar'
 import { PhotoNavigation } from './PhotoNavigation'
+import { TagOverlay } from './TagOverlay'
 
 export function PhotoViewModal({
   currentPhotoId,
@@ -95,6 +96,7 @@ export function PhotoViewModal({
             onNavigate={onNavigate}
             isTagMode={isTagMode}
           />
+          <TagOverlay isTagMode={isTagMode} onFinishTagging={() => setIsTagMode(false)} />
         </div>
         
         {!isFullscreen && (

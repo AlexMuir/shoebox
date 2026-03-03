@@ -72,7 +72,7 @@ class PhotosController < ApplicationController
       id: @photo.id,
       title: @photo.display_title,
       description: @photo.description,
-      image_url: @photo.image.attached? ? url_for(@photo.oriented_variant(:large)) : nil,
+      image_url: @photo.original.attached? ? url_for(@photo.oriented_variant(:large)) : nil,
       width: @photo.width,
       height: @photo.height,
       date_text: @photo.date_text,

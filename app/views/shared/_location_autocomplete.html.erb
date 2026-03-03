@@ -1,0 +1,35 @@
+<%# Reusable LocationAutocomplete component %>
+<%# Usage: render "shared/location_autocomplete", field_name: "...", label: "...", current_location: nil, placeholder: "..." %>
+<% current_location ||= nil %>
+<% placeholder ||= "Search for a location..." %>
+<% required ||= false %>
+<% local_only ||= false %>
+<div data-controller="location-autocomplete"
+     data-location-autocomplete-search-url-value="<%= search_locations_path %>"
+     data-location-autocomplete-create-url-value="<%= create_from_google_locations_path(format: :json) %>"
+     data-location-autocomplete-local-only-value="<%= local_only %>"
+     style="position: relative;">
+  <label class="form-label"><%= label %><%= " *" if required %></label>
+  <div class="input-group">
+    <input type="text"
+           class="form-control"
+           placeholder="<%= placeholder %>"
+           value="<%= current_location&.name %>"
+           autocomplete="off"
+           data-location-autocomplete-target="input"
+           data-action="input->location-autocomplete#onInput keydown->location-autocomplete#onKeydown"
+    <%= "required" if required %>>
+    <input type="hidden"
+           name="<%= field_name %>"
+           value="<%= current_location&.id %>"
+           data-location-autocomplete-target="hidden">
+    <% if current_location %>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->location-autocomplete#clear" title="Clear">
+        <i class="ti ti-x"></i>
+      </button>
+    <% end %>
+  </div>
+  <div class="dropdown-menu w-100" style="position: absolute; top: 100%; z-index: 1000;"
+       data-location-autocomplete-target="results"></div>
+  <div data-location-autocomplete-target="createForm" style="display: none;"></div>
+</div>

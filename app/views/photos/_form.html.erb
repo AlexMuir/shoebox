@@ -43,7 +43,7 @@
           <%= f.association :event, collection: current_family.events, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
         </div>
         <div class="mb-3">
-          <%= f.association :location, collection: current_family.locations, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+          <%= render 'shared/location_autocomplete', field_name: 'photo[location_id]', label: 'Location', current_location: photo.location, placeholder: 'Search for a location...' %>
         </div>
         <div class="mb-3">
           <%= f.association :photographer, collection: current_family.people, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>

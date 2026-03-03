@@ -8,7 +8,7 @@
         <%= f.input :description, as: :text, input_html: { class: 'form-control', rows: 4 }, label_html: { class: 'form-label' } %>
       </div>
       <div class="mb-3">
-        <%= f.association :location, collection: current_family.locations, input_html: { class: 'form-select' }, label_html: { class: 'form-label' } %>
+        <%= render 'shared/location_autocomplete', field_name: 'event[location_id]', label: 'Location', current_location: event.location, placeholder: 'Search for a location...' %>
       </div>
     </div>
     <div class="col-md-6">

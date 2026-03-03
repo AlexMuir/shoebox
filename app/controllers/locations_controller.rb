@@ -40,7 +40,7 @@ class LocationsController < ApplicationController
   end
 
   def show
-    @photos = @location.photos.recent
+    @photos = Photo.where(location: @location.subtree).recent
     @events = @location.events.reverse_chronological
     @children = @location.children.alphabetical
   end

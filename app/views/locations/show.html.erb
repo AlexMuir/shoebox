@@ -61,11 +61,11 @@
   <div class="col-lg-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Photos (<%= @location.photos.count %>)</h3>
+        <h3 class="card-title">Photos (<%= @photos.count %>)</h3>
       </div>
       <div class="card-body">
         <div class="row row-cards">
-          <% @location.photos.each do |photo| %>
+          <% @photos.each do |photo| %>
             <div class="col-sm-6 col-md-4">
               <div class="card card-sm">
                 <%= link_to photo_path(photo), class: "d-block" do %>
@@ -92,7 +92,7 @@
               </div>
             </div>
           <% end %>
-          <% if @location.photos.empty? %>
+          <% if @photos.empty? %>
             <div class="col-12 text-center py-5 text-secondary">
               <i class="ti ti-photo-off mb-3" style="font-size: 3rem;"></i>
               <p>No photos at this location yet.</p>

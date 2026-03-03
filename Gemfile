@@ -25,6 +25,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 # Storage & Media
 gem "aws-sdk-s3", require: false
 gem "image_processing", "~> 1.2"
+gem "mini_exiftool"
 
 # Auth & Policy
 gem "action_policy"

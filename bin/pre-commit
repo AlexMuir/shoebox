@@ -1,0 +1,38 @@
+#!/bin/sh
+# Pre-commit hook: enforce documentation freshness for large commits
+# Blocks commits with 10+ staged files unless AGENTS.md or README.md is also staged
+
+# Get count of staged files
+staged_count=$(git diff --cached --name-only | wc -l)
+
+# Trim whitespace (wc -l may have leading spaces on some systems)
+staged_count=$(printf '%d' "$staged_count")
+
+# If fewer than 10 files, allow commit silently
+if [ "$staged_count" -lt 10 ]; then
+  exit 0
+fi
+
+# Check if AGENTS.md or README.md is staged
+if git diff --cached --name-only | grep -q "^AGENTS\.md$" || \
+   git diff --cached --name-only | grep -q "^README\.md$"; then
+  exit 0
+fi
+
+# Block commit: 10+ files staged but no documentation update
+cat <<EOF
+pre-commit: Documentation update required
+
+This commit stages $staged_count files. Large commits (10+) must include
+documentation updates to AGENTS.md or README.md.
+
+To proceed:
+  1. Update AGENTS.md or README.md to reflect your changes
+  2. git add AGENTS.md   # or README.md
+  3. git commit
+
+Alternatively, if your changes truly don't affect documentation,
+update the docs to confirm they are still accurate.
+EOF
+
+exit 1

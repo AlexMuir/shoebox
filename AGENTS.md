@@ -51,6 +51,17 @@ bin/rails db:migrate
 bin/rails db:seed
 ```
 
+### Git Hooks
+
+A pre-commit hook blocks commits with 10 or more staged files unless `AGENTS.md` or `README.md` is also staged. This enforces documentation freshness on large changes.
+
+**When blocked:**
+- Update `AGENTS.md` (preferred) or `README.md` to reflect your changes
+- Stage the updated file: `git add AGENTS.md`
+- Then commit normally
+
+Run `bin/setup` to install the hook.
+
 ## Code Style & Conventions
 
 ### Ruby / Rails

@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require "fileutils"
+require "pathname"
 
 APP_ROOT = File.expand_path("..", __dir__)
 
@@ -15,6 +16,15 @@ FileUtils.chdir APP_ROOT do
   puts "== Installing dependencies =="
   system("bundle check") || system!("bundle install")
 
+  puts "\n== Installing git hooks =="
+  git_dir = `git rev-parse --git-dir`.strip
+  hooks_dir = File.join(git_dir, "hooks")
+  FileUtils.mkdir_p hooks_dir
+  # Calculate relative path from hooks dir to bin/pre-commit
+  hooks_abs = File.expand_path(hooks_dir)
+  bin_pre_commit_abs = File.expand_path("bin/pre-commit")
+  rel_path = Pathname.new(bin_pre_commit_abs).relative_path_from(Pathname.new(hooks_abs)).to_s
+  FileUtils.ln_sf rel_path, File.join(hooks_dir, "pre-commit")
   # puts "\n== Copying sample files =="
   # unless File.exist?("config/database.yml")
   #   FileUtils.cp "config/database.yml.sample", "config/database.yml"

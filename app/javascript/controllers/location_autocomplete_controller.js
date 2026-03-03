@@ -64,17 +64,13 @@ export default class extends Controller {
       html += `<div class="dropdown-item text-secondary disabled">No matching locations</div>`
     }
 
-    // Google section (skip if localOnly)
-    if (!this.localOnlyValue) {
+    // Google section (skip if localOnly or no results)
+    if (!this.localOnlyValue && google.length > 0) {
       html += `<div class="dropdown-divider"></div>`
       html += `<div class="dropdown-header">Google Places</div>`
-      if (google.length > 0) {
-        google.forEach(place => {
-          html += `<button type="button" class="dropdown-item" data-action="click->location-autocomplete#selectGoogle" data-place-id="${place.place_id}" data-place-description="${this.escapeHtml(place.description)}">${this.escapeHtml(place.description)}</button>`
-        })
-      } else {
-        html += `<div class="dropdown-item text-secondary disabled">No Google results</div>`
-      }
+      google.forEach(place => {
+        html += `<button type="button" class="dropdown-item" data-action="click->location-autocomplete#selectGoogle" data-place-id="${place.place_id}" data-place-description="${this.escapeHtml(place.description)}">${this.escapeHtml(place.description)}</button>`
+      })
     }
 
     this.resultsTarget.innerHTML = html

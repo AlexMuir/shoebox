@@ -1,0 +1,35 @@
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title w-100">
+      <a href="#" data-bs-toggle="collapse" data-bs-target="#exif-data" class="text-body text-decoration-none d-flex align-items-center">
+        Metadata
+        <i class="ti ti-chevron-down ms-auto"></i>
+      </a>
+    </h3>
+  </div>
+  <div id="exif-data" class="collapse">
+    <% if has_metadata? %>
+      <div class="card-body p-0">
+        <% sections.each do |section| %>
+          <div class="p-3 border-bottom">
+            <h4 class="card-title mb-2"><%= section[:title] %></h4>
+            <table class="table table-sm table-borderless mb-0">
+              <tbody>
+                <% section[:data].each do |key, value| %>
+                  <tr>
+                    <th class="w-50 text-secondary fw-normal"><%= key %></th>
+                    <td class="w-50"><%= value %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="card-body">
+        <p class="text-secondary mb-0">No metadata available</p>
+      </div>
+    <% end %>
+  </div>
+</div>

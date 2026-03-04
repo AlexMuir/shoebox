@@ -120,6 +120,20 @@ The app uses a passwordless authentication flow:
   - `working_image`: The processed image used for display.
 - **Contributions:** Collaborative context — any user can add info about a photo.
 - **Locations:** Hierarchical via `ancestry` gem. Can be as vague as "Kenya" or as specific as a street address.
+- **Date Determinations:** Provenance model tracking how a photo's date was determined.
+  - Sources: EXIF metadata, age estimates, filename patterns, manual entry.
+  - Model: `DateDetermination` with `source_type`, `confidence`, fuzzy date fields.
+  - Confidence scoring: EXIF (0.95) > Manual (0.9) > Age+exact DOB (0.85) > Age+year DOB (0.75) > Age+circa DOB (0.7) > Filename (0.6).
+  - Highest-confidence determination auto-updates `Photo#determined_*` fields.
+  - Service: `Photo::DateDeterminationService` creates records from various sources.
+  - Scorer: `Photo::ConfidenceScorer` assigns confidence based on source type.
+  - Person DOB changes trigger recalculation of all age-based determinations.
+  - Backfill task: `bin/rails date_determinations:backfill` for existing EXIF data.
+- **Person DOB:** People have optional `dob_year` (integer) and `dob_circa` (boolean) for approximate birth years.
+  - Used with `estimated_age` on `PhotoPerson`/`PhotoFace` to calculate photo dates.
+  - `Person#dob_text` returns human-readable DOB string.
+- **Photo tagging ages:** `PhotoPerson` and `PhotoFace` have optional `estimated_age` (integer, 1-120).
+  - When set alongside a person's DOB, triggers automatic date determination.
 
 ## Controllers
 The application includes 14 primary controllers:
@@ -129,9 +143,9 @@ The application includes 14 primary controllers:
 4. `Sessions::LoginCodesController`: Verifies login codes and establishes user sessions.
 5. `PhotosController`: Main CRUD for photos, gallery views, and filtering.
 6. `ContributionsController`: Allows users to add metadata and comments to photos.
-7. `PhotoPeopleController`: Manages associations between people and photos.
-8. `PhotoFacesController`: Handles manual face tagging and coordinate management.
-9. `PeopleController`: CRUD for people, including search and profile views.
+7. `PhotoPeopleController`: Manages associations between people and photos, including estimated age at tagging.
+8. `PhotoFacesController`: Handles manual face tagging, coordinate management, and estimated age.
+9. `PeopleController`: CRUD for people, including search, profile views, and DOB management.
 10. `EventsController`: Organizes photos into named historical events.
 11. `LocationsController`: Hierarchical location management with Google Maps integration.
 12. `UploadsController`: Multi-step photo upload and processing pipeline.
@@ -153,6 +167,8 @@ Photos use the following variants for the `working_image` attachment:
 - `services/orientation`: Python orientation detection microservice.
 - `spec/`: RSpec test suite.
 - `db/`: Database schema and migrations.
+- `app/services/photo/`: Photo-related service objects (date determination, confidence scoring).
+- `lib/tasks/`: Custom rake tasks (date determination backfill).
 
 ## Seed Data
 Sign in with: `alex@example.com`, `robin@example.com`, or `lindsey@example.com`

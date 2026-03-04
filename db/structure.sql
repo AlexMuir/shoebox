@@ -202,6 +202,46 @@ ALTER SEQUENCE public.contributions_id_seq OWNED BY public.contributions.id;
 
 
 --
+-- Name: date_determinations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.date_determinations (
+    id bigint NOT NULL,
+    photo_id bigint NOT NULL,
+    source_type character varying NOT NULL,
+    source_detail jsonb DEFAULT '{}'::jsonb,
+    determined_year integer,
+    determined_month integer,
+    determined_day integer,
+    confidence numeric(5,3),
+    created_by_id bigint,
+    photo_person_id bigint,
+    photo_face_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: date_determinations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.date_determinations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: date_determinations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.date_determinations_id_seq OWNED BY public.date_determinations.id;
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -441,7 +481,9 @@ CREATE TABLE public.people (
     bio text,
     user_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    dob_year integer,
+    dob_circa boolean DEFAULT false
 );
 
 
@@ -480,6 +522,7 @@ CREATE TABLE public.photo_faces (
     confidence numeric(8,6),
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
+    estimated_age integer,
     CONSTRAINT photo_faces_height_range CHECK (((height > (0)::numeric) AND (height <= (1)::numeric))),
     CONSTRAINT photo_faces_width_range CHECK (((width > (0)::numeric) AND (width <= (1)::numeric))),
     CONSTRAINT photo_faces_x_range CHECK (((x >= (0)::numeric) AND (x <= (1)::numeric))),
@@ -518,7 +561,8 @@ CREATE TABLE public.photo_people (
     person_id bigint NOT NULL,
     tagged_by_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    estimated_age integer
 );
 
 
@@ -610,7 +654,11 @@ CREATE TABLE public.photos (
     faces_analyzed_at timestamp without time zone,
     orientation_corrected boolean DEFAULT false,
     orientation_correction integer DEFAULT 0,
-    image_metadata jsonb DEFAULT '{}'::jsonb
+    image_metadata jsonb DEFAULT '{}'::jsonb,
+    determined_year integer,
+    determined_month integer,
+    determined_day integer,
+    best_date_determination_id bigint
 );
 
 
@@ -781,6 +829,13 @@ ALTER TABLE ONLY public.contributions ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: date_determinations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations ALTER COLUMN id SET DEFAULT nextval('public.date_determinations_id_seq'::regclass);
+
+
+--
 -- Name: events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -916,6 +971,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.contributions
     ADD CONSTRAINT contributions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: date_determinations date_determinations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations
+    ADD CONSTRAINT date_determinations_pkey PRIMARY KEY (id);
 
 
 --
@@ -1085,6 +1148,48 @@ CREATE INDEX index_contributions_on_photo_id_and_field_name ON public.contributi
 --
 
 CREATE INDEX index_contributions_on_user_id ON public.contributions USING btree (user_id);
+
+
+--
+-- Name: index_date_determinations_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_created_by_id ON public.date_determinations USING btree (created_by_id);
+
+
+--
+-- Name: index_date_determinations_on_photo_face_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_photo_face_id ON public.date_determinations USING btree (photo_face_id);
+
+
+--
+-- Name: index_date_determinations_on_photo_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_photo_id ON public.date_determinations USING btree (photo_id);
+
+
+--
+-- Name: index_date_determinations_on_photo_id_and_confidence; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_photo_id_and_confidence ON public.date_determinations USING btree (photo_id, confidence);
+
+
+--
+-- Name: index_date_determinations_on_photo_id_and_source_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_photo_id_and_source_type ON public.date_determinations USING btree (photo_id, source_type);
+
+
+--
+-- Name: index_date_determinations_on_photo_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_date_determinations_on_photo_person_id ON public.date_determinations USING btree (photo_person_id);
 
 
 --
@@ -1284,6 +1389,13 @@ CREATE INDEX index_photo_sources_on_source_person_id ON public.photo_sources USI
 
 
 --
+-- Name: index_photos_on_best_date_determination_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_photos_on_best_date_determination_id ON public.photos USING btree (best_date_determination_id);
+
+
+--
 -- Name: index_photos_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1429,6 +1541,14 @@ ALTER TABLE ONLY public.face_regions
 
 
 --
+-- Name: date_determinations fk_rails_1b970b1cce; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations
+    ADD CONSTRAINT fk_rails_1b970b1cce FOREIGN KEY (photo_id) REFERENCES public.photos(id);
+
+
+--
 -- Name: photos fk_rails_1dee3b50b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1509,6 +1629,14 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: date_determinations fk_rails_73c39cbcb1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations
+    ADD CONSTRAINT fk_rails_73c39cbcb1 FOREIGN KEY (photo_face_id) REFERENCES public.photo_faces(id);
+
+
+--
 -- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1530,6 +1658,22 @@ ALTER TABLE ONLY public.family_memberships
 
 ALTER TABLE ONLY public.family_memberships
     ADD CONSTRAINT fk_rails_829cfb2ffc FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: date_determinations fk_rails_84b265d752; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations
+    ADD CONSTRAINT fk_rails_84b265d752 FOREIGN KEY (created_by_id) REFERENCES public.users(id);
+
+
+--
+-- Name: date_determinations fk_rails_8705abe832; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.date_determinations
+    ADD CONSTRAINT fk_rails_8705abe832 FOREIGN KEY (photo_person_id) REFERENCES public.photo_people(id);
 
 
 --
@@ -1661,6 +1805,14 @@ ALTER TABLE ONLY public.face_regions
 
 
 --
+-- Name: photos fk_rails_f83a30c555; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.photos
+    ADD CONSTRAINT fk_rails_f83a30c555 FOREIGN KEY (best_date_determination_id) REFERENCES public.date_determinations(id);
+
+
+--
 -- Name: login_codes fk_rails_f8423fb01a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1675,6 +1827,10 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260304114561'),
+('20260304114560'),
+('20260304114559'),
+('20260304114558'),
 ('20260303204250'),
 ('20260303203131'),
 ('20260303142058'),

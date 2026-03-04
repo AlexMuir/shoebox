@@ -59,3 +59,6 @@ node_modules
 services/orientation/.venv/
 services/orientation/__pycache__/
 services/orientation/models/*.onnx
+
+# Sisyphus / OpenCode working files
+.sisyphus/

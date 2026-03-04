@@ -67,3 +67,7 @@ services/orientation/models/*.onnx
 .playwright/
 test-results/
 playwright-report/
+
+
+# Test coverage
+coverage/

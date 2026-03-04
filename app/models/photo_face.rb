@@ -7,6 +7,7 @@ class PhotoFace < ApplicationRecord
   validates :x, :y, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
   validates :width, :height, numericality: { greater_than: 0, less_than_or_equal_to: 1 }
   validate :must_fit_within_photo
+  validates :estimated_age, numericality: { in: 1..120 }, allow_nil: true
 
   scope :ordered, -> { order(:id) }
 

@@ -24,6 +24,46 @@ RSpec.describe PhotoFace, type: :model do
     end
   end
 
+  describe "estimated_age validation" do
+    it "allows nil estimated_age" do
+      photo_face = build(:photo_face, estimated_age: nil)
+
+      expect(photo_face).to be_valid
+    end
+
+    it "allows valid age between 1 and 120" do
+      photo_face = build(:photo_face, estimated_age: 45)
+
+      expect(photo_face).to be_valid
+    end
+
+    it "allows age of 1" do
+      photo_face = build(:photo_face, estimated_age: 1)
+
+      expect(photo_face).to be_valid
+    end
+
+    it "allows age of 120" do
+      photo_face = build(:photo_face, estimated_age: 120)
+
+      expect(photo_face).to be_valid
+    end
+
+    it "rejects age of 0" do
+      photo_face = build(:photo_face, estimated_age: 0)
+
+      expect(photo_face).not_to be_valid
+      expect(photo_face.errors[:estimated_age]).to be_present
+    end
+
+    it "rejects age greater than 120" do
+      photo_face = build(:photo_face, estimated_age: 150)
+
+      expect(photo_face).not_to be_valid
+      expect(photo_face.errors[:estimated_age]).to be_present
+    end
+  end
+
   describe "preview helpers" do
     it "calculates center and zoom from coordinates" do
       photo_face = build(:photo_face, x: 0.1, y: 0.2, width: 0.25, height: 0.3)

@@ -151,7 +151,10 @@ class Photo < ApplicationRecord
       date_str = raw[/\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2}/]
       if date_str.present?
         parsed = Time.strptime(date_str, "%Y:%m:%d %H:%M:%S") rescue nil
-        update_column(:taken_at, parsed) if parsed
+        if parsed
+          update_column(:taken_at, parsed)
+          Photo::DateDeterminationService.from_exif(self, taken_at: parsed)
+        end
       end
     end
   rescue => e

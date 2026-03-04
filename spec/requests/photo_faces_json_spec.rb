@@ -26,6 +26,17 @@ RSpec.describe "PhotoFaces JSON API", type: :request do
       expect(body).to include("id", "x", "y", "width", "height")
     end
 
+    it "creates a face with estimated_age and returns it in JSON" do
+      post photo_photo_faces_path(photo),
+           params: { photo_face: { x: 0.3, y: 0.3, width: 0.1, height: 0.1, estimated_age: 30 } },
+           headers: { "Accept" => "application/json" },
+           as: :json
+      expect(response).to have_http_status(:created)
+      body = JSON.parse(response.body)
+      expect(body).to include("id", "x", "y", "width", "height", "estimated_age")
+      expect(body["estimated_age"]).to eq(30)
+    end
+
     it "returns 422 with errors for invalid params" do
       post photo_photo_faces_path(photo),
            params: { photo_face: { x: 1.5, y: 0.3, width: 0.1, height: 0.1 } },
@@ -49,6 +60,28 @@ RSpec.describe "PhotoFaces JSON API", type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body["person"]).to include("id" => person.id)
+    end
+
+    it "updates face with estimated_age and saves it" do
+      patch photo_photo_face_path(photo, face),
+            params: { photo_face: { estimated_age: 25 } },
+            headers: { "Accept" => "application/json" },
+            as: :json
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["estimated_age"]).to eq(25)
+      face.reload
+      expect(face.estimated_age).to eq(25)
+    end
+
+    it "triggers DateDeterminationService when assigning person with estimated_age" do
+      person.update!(date_of_birth: "1990-01-15")
+      expect(Photo::DateDeterminationService).to receive(:from_age_estimate).with(photo_face: instance_of(PhotoFace))
+      patch photo_photo_face_path(photo, face),
+            params: { photo_face: { person_id: person.id, estimated_age: 30 } },
+            headers: { "Accept" => "application/json" },
+            as: :json
+      expect(response).to have_http_status(:ok)
     end
   end
 

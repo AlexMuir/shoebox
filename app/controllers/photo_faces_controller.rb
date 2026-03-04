@@ -26,6 +26,10 @@ class PhotoFacesController < ApplicationController
 
     if @photo_face.update(attributes)
       @photo_face.reload
+      # Trigger date determination if person and age are both present
+      if @photo_face.person_id.present? && @photo_face.estimated_age.present?
+        Photo::DateDeterminationService.from_age_estimate(photo_face: @photo_face)
+      end
       respond_to do |format|
         format.html { redirect_to @photo, notice: @photo_face.person_id.present? ? "Face tagged." : "Face untagged." }
         format.json { render json: photo_face_json(@photo_face), status: :ok }
@@ -54,6 +58,7 @@ class PhotoFacesController < ApplicationController
       y: face.y,
       width: face.width,
       height: face.height,
+      estimated_age: face.estimated_age,
       person: face.person ? { id: face.person.id, name: face.person.full_name } : nil
     }
   end
@@ -68,6 +73,6 @@ class PhotoFacesController < ApplicationController
   end
 
   def photo_face_params
-    params.expect(photo_face: [ :person_id, :x, :y, :width, :height, :confidence ])
+    params.expect(photo_face: [ :person_id, :x, :y, :width, :height, :confidence, :estimated_age ])
   end
 end

@@ -62,3 +62,8 @@ services/orientation/models/*.onnx
 
 # Sisyphus / OpenCode working files
 .sisyphus/
+
+# Playwright artifacts
+.playwright/
+test-results/
+playwright-report/

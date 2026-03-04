@@ -1,0 +1,29 @@
+=== QA Verification for Git Hooks Section ===
+
+1. Count of 'pre-commit' mentions:
+1
+
+2. Count of '10' mentions:
+1
+
+3. Count of 'AGENTS.md' mentions:
+3
+
+4. Total line count (should be > 101):
+112 AGENTS.md
+
+5. First 5 lines (should be unchanged):
+# Photos - Agent Instructions
+
+Photos is a Rails app for families to upload, organize, and collaboratively annotate their old photos.
+
+## Database
+
+6. Check for existing content 'Ruby 3.2.2' (should be present):
+1
+
+7. Git Hooks section present:
+1
+
+8. Documentation freshness enforcement mentioned:
+1

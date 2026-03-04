@@ -1,0 +1,23 @@
+TASK 1: .gitignore Update Evidence
+===================================
+
+CHANGE: Added .sisyphus/ to .gitignore
+
+ADDED LINES (at end of file):
+---
+# Sisyphus development metadata (local-only)
+.sisyphus/
+---
+
+FILE: /home/pippin/projects/photos/.gitignore
+TOTAL LINES: 64
+LAST LINES:
+  58: # Orientation detection service
+  59: services/orientation/.venv/
+  60: services/orientation/__pycache__/
+  61: services/orientation/models/*.onnx
+  62: (blank)
+  63: # Sisyphus development metadata (local-only)
+  64: .sisyphus/
+
+STATUS: ✓ PASS - .sisyphus/ added to .gitignore with comment header

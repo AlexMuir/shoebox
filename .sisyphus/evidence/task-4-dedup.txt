@@ -1,0 +1,16 @@
+2026-03-03 Task 4 dedup evidence
+
+Command:
+bundle exec rspec spec/services/location_hierarchy_service_spec.rb -e "deduplication" --format documentation
+
+Output:
+Run options: include {:full_description=>/deduplication/}
+
+LocationHierarchyService
+  .call
+    deduplication
+      reuses existing location by google_place_id for leaf
+      reuses existing parent by name when it exists
+
+Finished in 0.03821 seconds (files took 0.57977 seconds to load)
+2 examples, 0 failures

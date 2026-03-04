@@ -1,0 +1,45 @@
+TASK 1: Migration Evidence
+==========================
+
+MIGRATION FILE CREATED
+File: db/migrate/20260303123553_add_google_place_id_to_locations.rb
+
+Content:
+--------
+class AddGooglePlaceIdToLocations < ActiveRecord::Migration[8.1]
+  def change
+    add_column :locations, :google_place_id, :string
+    add_index :locations, [ :family_id, :google_place_id ], unique: true, where: "google_place_id IS NOT NULL"
+  end
+end
+
+MIGRATION APPLIED
+-----------------
+== 20260303123553 AddGooglePlaceIdToLocations: migrating ======================
+-- add_column(:locations, :google_place_id, :string)
+   -> 0.0013s
+-- add_index(:locations, [:family_id, :google_place_id], {:unique=>true, :where=>"google_place_id IS NOT NULL"})
+   -> 0.0030s
+== 20260303123553 AddGooglePlaceIdToLocations: migrated (0.0044s) =============
+
+SCHEMA VERIFICATION
+-------------------
+✓ google_place_id column added to locations table as character varying
+✓ Partial unique index created: index_locations_on_family_id_and_google_place_id
+✓ Index includes WHERE (google_place_id IS NOT NULL) clause
+✓ Index is on (family_id, google_place_id) columns
+
+db/structure.sql verification:
+- google_place_id character varying (line 372)
+- CREATE UNIQUE INDEX index_locations_on_family_id_and_google_place_id ON public.locations USING btree (family_id, google_place_id) WHERE (google_place_id IS NOT NULL);
+
+LINTING VERIFICATION
+--------------------
+✓ bin/rubocop db/migrate/20260303123553_add_google_place_id_to_locations.rb
+  1 file inspected, no offenses detected
+
+GIT COMMIT
+----------
+✓ Commit created: 2aa7cba
+  Message: feat(locations): add google_place_id column and webmock for testing
+  Files changed: 5 files, 34 insertions(+), 1 deletion(-)

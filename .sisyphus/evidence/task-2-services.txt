@@ -1,0 +1,21 @@
+Task 2: ApplicationService Base Class Verification
+====================================================
+
+File created: app/services/application_service.rb
+
+Content:
+--------
+class ApplicationService
+  def self.call(...)
+    new(...).call
+  end
+end
+
+Verification:
+Command: bin/rails runner "puts ApplicationService.respond_to?(:call)"
+Output: true
+
+✓ ApplicationService class created
+✓ self.call(...) class method exists
+✓ Ruby 3 forwarding syntax (...) used correctly
+✓ app/services/ directory created and autoloaded by Rails

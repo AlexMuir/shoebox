@@ -1,0 +1,84 @@
+=== TASK 2 QA EVIDENCE ===
+Date: 2026-03-03
+Worktree: /home/pippin/projects/photos-docs-freshness-hook
+
+=== SCENARIO 1: bin/setup creates symlink ===
+Command: cd /home/pippin/projects/photos-docs-freshness-hook && rm -f $(git rev-parse --git-dir)/hooks/pre-commit && ruby bin/setup --skip-server
+
+Output:
+== Installing dependencies ==
+Your Gemfile lists the gem shoulda-matchers (>= 0) more than once.
+You should probably keep only one of them.
+Remove any duplicate entries and specify the version of one of them later.
+While it's not a problem now, it could cause errors if you change the version of one of them later.
+The Gemfile's dependencies are satisfied
+
+== Installing git hooks ==
+
+== Preparing database ==
+
+== Removing old logs and tempfiles ==
+
+EXIT: 0
+SYMLINK EXISTS
+Symlink target: ../../../../../photos-docs-freshness-hook/bin/pre-commit
+
+✓ Symlink created successfully
+✓ Symlink uses relative path (not absolute)
+✓ Symlink points to bin/pre-commit
+
+=== SCENARIO 2: bin/setup is idempotent ===
+Command: Run bin/setup twice with --skip-server
+
+First run:
+== Installing dependencies ==
+Your Gemfile lists the gem shoulda-matchers (>= 0) more than once.
+You should probably keep only one of them.
+Remove any duplicate entries and specify the version of one of them later.
+While it's not a problem now, it could cause errors if you change the version of one of them later.
+The Gemfile's dependencies are satisfied
+
+== Installing git hooks ==
+
+== Preparing database ==
+
+== Removing old logs and tempfiles ==
+
+First run EXIT: 0
+
+Second run:
+== Installing dependencies ==
+Your Gemfile lists the gem shoulda-matchers (>= 0) more than once.
+You should probably keep only one of them.
+Remove any duplicate entries and specify the version of one of them later.
+While it's not a problem now, it could cause errors if you change the version of one of them later.
+The Gemfile's dependencies are satisfied
+
+== Installing git hooks ==
+
+== Preparing database ==
+
+== Removing old logs and tempfiles ==
+
+Second run EXIT: 0
+SYMLINK STILL EXISTS
+
+✓ Both runs exit with code 0
+✓ No errors on second run (idempotent)
+✓ Symlink still exists after both runs
+
+=== VERIFICATION ===
+✓ bin/setup contains "Installing git hooks" section
+✓ Section placed between "Installing dependencies" and "Preparing database"
+✓ Uses FileUtils.mkdir_p and FileUtils.ln_sf
+✓ Prints "\n== Installing git hooks ==" matching existing style
+✓ Running ruby bin/setup --skip-server creates the symlink
+✓ Running it twice does NOT error (idempotent)
+✓ Symlink uses RELATIVE path (not absolute)
+✓ Symlink correctly points to bin/pre-commit script
+
+=== NOTES ===
+- Worktree git directory: /home/pippin/projects/photos/.git/worktrees/photos-docs-freshness-hook/
+- Symlink created at: .git/worktrees/photos-docs-freshness-hook/hooks/pre-commit
+- Relative path calculated using Pathname.relative_path_from for cross-platform compatibility
+- FileUtils.ln_sf is idempotent (force flag allows re-running without errors)

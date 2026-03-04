@@ -1,0 +1,22 @@
+Task 6 Evidence — create_from_google Controller Action
+Date: 2026-03-03
+Worktree: /home/pippin/projects/photos-location-autocomplete
+
+Implemented:
+- LocationsController#search
+  - Returns { local: [], google: [] } for blank/short (<2) queries
+  - Queries current_family.locations by ILIKE name, alphabetical, limit 5
+  - Maps local results as { id, name, parent_name }
+  - Calls GooglePlacesService#autocomplete only when session_token is present
+- LocationsController#create_from_google
+  - Calls GooglePlacesService#place_details(place_id, session_token)
+  - Returns 422 with { error: "Place not found" } when details are nil
+  - Calls LocationHierarchyService.call(current_family, place_details)
+  - Returns { id, name } for created/found location
+
+Verification:
+Command: bin/rubocop app/controllers/locations_controller.rb
+Result: 1 file inspected, no offenses detected
+
+Command: bundle exec rspec spec/requests/locations_search_spec.rb --format documentation
+Result: 8 examples, 0 failures

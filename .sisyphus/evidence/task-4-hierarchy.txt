@@ -1,0 +1,15 @@
+2026-03-03 Task 4 hierarchy evidence
+
+Command:
+bundle exec rspec spec/services/location_hierarchy_service_spec.rb -e "address place" --format documentation
+
+Output:
+Run options: include {:full_description=>/address\ place/}
+
+LocationHierarchyService
+  .call
+    with an address place (street + city + country)
+      creates UK > Manchester > address hierarchy
+
+Finished in 0.03561 seconds (files took 0.58431 seconds to load)
+1 example, 0 failures

@@ -1,0 +1,38 @@
+=== Scenario 2: Allow — 12 files + AGENTS.md ===
+EXPECTED: Exit 0, commit succeeds (silent)
+
+--- Staged files ---
+AGENTS.md
+file1.txt
+file10.txt
+file11.txt
+file12.txt
+file2.txt
+file3.txt
+file4.txt
+file5.txt
+file6.txt
+file7.txt
+file8.txt
+file9.txt
+
+--- Command: git commit -m 'test 12 files with AGENTS.md' ---
+[main f753e49] test 12 files with AGENTS.md
+ 13 files changed, 13 insertions(+)
+ create mode 100644 AGENTS.md
+ create mode 100644 file1.txt
+ create mode 100644 file10.txt
+ create mode 100644 file11.txt
+ create mode 100644 file12.txt
+ create mode 100644 file2.txt
+ create mode 100644 file3.txt
+ create mode 100644 file4.txt
+ create mode 100644 file5.txt
+ create mode 100644 file6.txt
+ create mode 100644 file7.txt
+ create mode 100644 file8.txt
+ create mode 100644 file9.txt
+
+EXIT: 0
+
+RESULT: PASS (exit 0 as expected, commit succeeded)

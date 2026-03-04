@@ -17,7 +17,7 @@ lindsey = User.find_or_create_by!(email: "lindsey@example.com") do |u|
 end
 
 # Create family memberships
-[alex, robin, lindsey].each do |user|
+[ alex, robin, lindsey ].each do |user|
   FamilyMembership.find_or_create_by!(family: family, user: user, role: "member")
 end
 
@@ -29,7 +29,7 @@ people_data = [
   { first_name: "Margaret", last_name: "Muir", date_of_birth: Date.new(1930, 5, 1), date_of_death: Date.new(2015, 12, 3) },
   { first_name: "James", last_name: "Muir", date_of_birth: Date.new(1928, 9, 14), date_of_death: Date.new(2010, 4, 20) },
   { first_name: "Sarah", last_name: "Muir", date_of_birth: Date.new(1985, 1, 30) },
-  { first_name: "David", last_name: "Campbell", date_of_birth: Date.new(1980, 6, 12) },
+  { first_name: "David", last_name: "Campbell", date_of_birth: Date.new(1980, 6, 12) }
 ]
 
 people = people_data.map do |data|
@@ -67,7 +67,7 @@ events_data = [
   { title: "Christmas 1990", date_type: "month", year_from: 1990, month_from: 12, location: edinburgh },
   { title: "Wedding Day", date_type: "exact", year_from: 1980, month_from: 6, day_from: 14, location: edinburgh },
   { title: "Kenya Safari", date_type: "year", year_from: 1995, location: kenya },
-  { title: "Grandma's 80th Birthday", date_type: "exact", year_from: 2010, month_from: 5, day_from: 1 },
+  { title: "Grandma's 80th Birthday", date_type: "exact", year_from: 2010, month_from: 5, day_from: 1 }
 ]
 
 events = events_data.map do |data|

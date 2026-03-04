@@ -1,0 +1,18 @@
+Task 6 Evidence — Local Search Request Specs
+Date: 2026-03-03
+Worktree: /home/pippin/projects/photos-location-autocomplete
+
+Command:
+bundle exec rspec spec/requests/locations_search_spec.rb --format documentation
+
+Result:
+- 8 examples, 0 failures
+- Covers GET /locations/search JSON response shape
+- Covers short/blank query empty responses
+- Covers family scoping and Google autocomplete inclusion
+
+Command:
+bundle exec rspec
+
+Result:
+- 103 examples, 0 failures

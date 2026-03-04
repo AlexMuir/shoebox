@@ -1,0 +1,26 @@
+Task 2: Location Routes Verification
+=====================================
+
+Command: bin/rails routes -g location
+
+Output:
+Routes for application:
+                           Prefix Verb   URI Pattern                             Controller#Action
+                 search_locations GET    /locations/search(.:format)             locations#search
+     create_from_google_locations POST   /locations/create_from_google(.:format) locations#create_from_google
+                        locations GET    /locations(.:format)                    locations#index
+                                  POST   /locations(.:format)                    locations#create
+                     new_location GET    /locations/new(.:format)                locations#new
+                    edit_location GET    /locations/:id/edit(.:format)           locations#edit
+                         location GET    /locations/:id(.:format)                locations#show
+                                  PATCH  /locations/:id(.:format)                locations#update
+                                  PUT    /locations/:id(.:format)                locations#update
+                                  DELETE /locations/:id(.:format)                locations#destroy
+ turbo_recede_historical_location GET    /recede_historical_location(.:format)   turbo/native/navigation#recede
+ turbo_resume_historical_location GET    /resume_historical_location(.:format)   turbo/native/navigation#resume
+turbo_refresh_historical_location GET    /refresh_historical_location(.:format)  turbo/native/navigation#refresh
+
+✓ search_locations GET /locations/search(.:format) locations#search
+✓ create_from_google_locations POST /locations/create_from_google(.:format) locations#create_from_google
+
+Both collection routes successfully added to locations resource.

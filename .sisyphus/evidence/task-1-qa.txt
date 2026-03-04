@@ -1,0 +1,100 @@
+=== QA Test Results for bin/pre-commit ===
+Timestamp: Tue Mar  3 07:50:02 PM GMT 2026
+
+--- Scenario 1: Block commit with 12 files, no docs ---
+Exit code: 1 (expected: 1)
+Output:
+pre-commit: Documentation update required
+
+This commit stages 12 files. Large commits (10+) must include
+documentation updates to AGENTS.md or README.md.
+
+To proceed:
+  1. Update AGENTS.md or README.md to reflect your changes
+  2. git add AGENTS.md   # or README.md
+  3. git commit
+
+Alternatively, if your changes truly don't affect documentation,
+update the docs to confirm they are still accurate.
+
+--- Scenario 2: Allow commit with 12 files + AGENTS.md ---
+Exit code: 0 (expected: 0)
+Output: (should be silent or commit message only)
+[main 50a8845] test with agents
+ 13 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 AGENTS.md
+ create mode 100644 file01.txt
+ create mode 100644 file02.txt
+ create mode 100644 file03.txt
+ create mode 100644 file04.txt
+ create mode 100644 file05.txt
+ create mode 100644 file06.txt
+ create mode 100644 file07.txt
+ create mode 100644 file08.txt
+ create mode 100644 file09.txt
+ create mode 100644 file10.txt
+ create mode 100644 file11.txt
+ create mode 100644 file12.txt
+
+--- Scenario 3: Allow commit with 12 files + README.md ---
+Exit code: 0 (expected: 0)
+Output: (should be silent or commit message only)
+[main 51bfc16] test with readme
+ 13 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 README.md
+ create mode 100644 file01.txt
+ create mode 100644 file02.txt
+ create mode 100644 file03.txt
+ create mode 100644 file04.txt
+ create mode 100644 file05.txt
+ create mode 100644 file06.txt
+ create mode 100644 file07.txt
+ create mode 100644 file08.txt
+ create mode 100644 file09.txt
+ create mode 100644 file10.txt
+ create mode 100644 file11.txt
+ create mode 100644 file12.txt
+
+--- Scenario 4: Allow small commit (5 files), no docs ---
+Exit code: 0 (expected: 0)
+Output: (should be silent or commit message only)
+[main d568fc2] small
+ 5 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 file1.txt
+ create mode 100644 file2.txt
+ create mode 100644 file3.txt
+ create mode 100644 file4.txt
+ create mode 100644 file5.txt
+
+--- Scenario 5: Boundary — exactly 10 files, no docs ---
+Exit code: 1 (expected: 1)
+Output:
+pre-commit: Documentation update required
+
+This commit stages 10 files. Large commits (10+) must include
+documentation updates to AGENTS.md or README.md.
+
+To proceed:
+  1. Update AGENTS.md or README.md to reflect your changes
+  2. git add AGENTS.md   # or README.md
+  3. git commit
+
+Alternatively, if your changes truly don't affect documentation,
+update the docs to confirm they are still accurate.
+
+--- Scenario 6: Boundary — exactly 9 files, no docs ---
+Exit code: 0 (expected: 0)
+Output: (should be silent or commit message only)
+[main fbf4b80] boundary9
+ 9 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 file1.txt
+ create mode 100644 file2.txt
+ create mode 100644 file3.txt
+ create mode 100644 file4.txt
+ create mode 100644 file5.txt
+ create mode 100644 file6.txt
+ create mode 100644 file7.txt
+ create mode 100644 file8.txt
+ create mode 100644 file9.txt
+
+=== QA Complete ===

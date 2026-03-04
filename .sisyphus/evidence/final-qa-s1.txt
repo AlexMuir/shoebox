@@ -1,0 +1,34 @@
+=== Scenario 1: Block — 12 files, no docs ===
+EXPECTED: Exit 1, error message about docs
+
+--- Staged files ---
+file1.txt
+file10.txt
+file11.txt
+file12.txt
+file2.txt
+file3.txt
+file4.txt
+file5.txt
+file6.txt
+file7.txt
+file8.txt
+file9.txt
+
+--- Command: git commit -m 'test 12 files no docs' ---
+pre-commit: Documentation update required
+
+This commit stages 12 files. Large commits (10+) must include
+documentation updates to AGENTS.md or README.md.
+
+To proceed:
+  1. Update AGENTS.md or README.md to reflect your changes
+  2. git add AGENTS.md   # or README.md
+  3. git commit
+
+Alternatively, if your changes truly don't affect documentation,
+update the docs to confirm they are still accurate.
+
+EXIT: 1
+
+RESULT: PASS (exit 1 as expected)

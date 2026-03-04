@@ -1,0 +1,21 @@
+TASK 1: Worktree Deletion Evidence
+===================================
+
+COMMAND: git worktree list
+
+FINAL STATE (3 worktrees remaining):
+/home/pippin/projects/photos                      255eeca [main]
+/home/pippin/projects/photos-docs-freshness-hook  d99886a [docs-freshness-hook]
+/home/pippin/projects/photos-face-recognition     fe750d6 [face-recognition]
+
+DELETED WORKTREES (3):
+- /home/pippin/projects/photos-photo-view
+- /home/pippin/projects/photos-photo-metadata
+- /home/pippin/projects/photos-location-autocomplete
+
+DELETED BRANCHES (3):
+- photo-view (was da2c775)
+- photo-metadata (was ccc206e)
+- location-autocomplete (was 8a7a59c)
+
+STATUS: ✓ PASS - Exactly 3 worktrees remain (main, docs-freshness-hook, face-recognition)

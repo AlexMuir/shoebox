@@ -1,0 +1,34 @@
+Task 3 Evidence - GooglePlacesService
+Date: 2026-03-03
+Worktree: /home/pippin/projects/photos-location-autocomplete
+
+Command:
+bundle exec rspec spec/services/google_places_service_spec.rb --format documentation
+
+Output:
+GooglePlacesService
+  #autocomplete
+    returns mapped suggestions on success
+    returns empty array when API key is missing
+    returns empty array on timeout
+    returns empty array on server error
+  #place_details
+    returns mapped place details on success
+    returns nil when API key is missing
+    returns nil on network error
+
+Finished in 0.03656 seconds (files took 0.60361 seconds to load)
+7 examples, 0 failures
+
+Command:
+bin/rubocop app/services/google_places_service.rb spec/services/google_places_service_spec.rb
+
+Output:
+Inspecting 2 files
+..
+
+2 files inspected, no offenses detected
+
+LSP Diagnostics:
+- app/services/google_places_service.rb: clean
+- spec/services/google_places_service_spec.rb: clean

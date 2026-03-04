@@ -55,6 +55,11 @@ FactoryBot.define do
       date_of_birth { Faker::Date.birthday(min_age: 20, max_age: 80) }
     end
 
+    trait :with_dob do
+      dob_year { rand(1900..Date.current.year - 18) }
+      dob_circa { false }
+    end
+
     trait :deceased do
       date_of_birth { Faker::Date.birthday(min_age: 60, max_age: 90) }
       date_of_death { Faker::Date.between(from: 2.years.ago, to: Date.current) }

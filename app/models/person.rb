@@ -7,6 +7,7 @@ class Person < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :dob_year, numericality: { in: 1000..Date.current.year }, allow_nil: true
 
   normalizes :first_name, :last_name, :maiden_name, with: ->(name) { name.squish }
 
@@ -22,5 +23,14 @@ class Person < ApplicationRecord
     return nil unless date_of_birth.present?
     reference_date = date_of_death || Date.current
     ((reference_date - date_of_birth).to_i / 365.25).floor
+  end
+
+  def dob_text
+    return nil unless dob_year.present?
+    dob_circa ? "c. #{dob_year}" : "#{dob_year}"
+  end
+
+  def has_dob?
+    dob_year.present?
   end
 end

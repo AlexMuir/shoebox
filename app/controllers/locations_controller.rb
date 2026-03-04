@@ -2,7 +2,7 @@ class LocationsController < ApplicationController
   before_action :set_location, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @locations = current_family.locations.roots.alphabetical
+    @locations = current_family.locations.manual_entry.alphabetical
   end
 
   def search
@@ -36,6 +36,7 @@ class LocationsController < ApplicationController
     end
 
     location = LocationHierarchyService.call(current_family, place_details)
+    location.update!(manual: true)
     render json: { id: location.id, name: location.name }
   end
 
@@ -52,7 +53,7 @@ class LocationsController < ApplicationController
 
   def create
     @location = current_family.locations.build(location_params)
-
+    @location.manual = true
     if @location.save
       redirect_to @location, notice: "Location created successfully."
     else

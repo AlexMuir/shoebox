@@ -10,7 +10,7 @@ export default class extends Controller {
 
   connect() {
     this.timeout = null
-    this.sessionToken = crypto.randomUUID()
+    this.sessionToken = this.generateUUID()
     document.addEventListener("click", this.handleOutsideClick)
   }
 
@@ -113,7 +113,7 @@ export default class extends Controller {
         const location = await response.json()
         this.hiddenTarget.value = location.id
         this.inputTarget.value = location.name
-        this.sessionToken = crypto.randomUUID()
+        this.sessionToken = this.generateUUID()
       } else {
         this.inputTarget.value = ""
         if (this.hasCreateFormTarget) {
@@ -146,5 +146,16 @@ export default class extends Controller {
     const div = document.createElement("div")
     div.textContent = text
     return div.innerHTML
+  }
+
+  generateUUID() {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID()
+    }
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0
+      const v = c === "x" ? r : (r & 0x3 | 0x8)
+      return v.toString(16)
+    })
   }
 }

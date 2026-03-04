@@ -1,10 +1,10 @@
 {
-  "active_plan": "/home/pippin/projects/photos/.sisyphus/plans/orientation-face-recognition.md",
-  "started_at": "2026-03-01T06:45:43.619Z",
-  "session_ids": [
-    "ses_359877d58ffea2jl05a13namh5"
-  ],
-  "plan_name": "orientation-face-recognition",
-  "worktree_path": "/home/pippin/projects/photos-face-recognition",
-  "agent": "atlas"
+"active_plan": "/home/pippin/projects/photos/.sisyphus/plans/dev-setup-upgrade.md",
+"started_at": "2026-03-04T08:09:21.606Z",
+"session_ids": [
+"ses_3487583f9ffeSlRGuH83m34oTj"
+],
+"plan_name": "dev-setup-upgrade",
+  "agent": "atlas",
+  "worktree_path": "/home/pippin/projects/photos"
 }

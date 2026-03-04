@@ -94,4 +94,97 @@ RSpec.describe Person, type: :model do
       expect(person.has_dob?).to eq(false)
     end
   end
+
+  describe "DOB change callbacks" do
+    it "recalculates all age-based determinations when dob_year changes" do
+      person = create(:person, dob_year: 1950)
+
+      photo_one = create(:photo, family: person.family)
+      photo_two = create(:photo, family: person.family)
+
+      photo_person = create(:photo_person, photo: photo_one, person: person, estimated_age: 25)
+      photo_face = create(:photo_face, photo: photo_two, person: person, estimated_age: 30)
+
+      age_determination_from_person = create(
+        :date_determination,
+        photo: photo_one,
+        photo_person: photo_person,
+        source_type: "age_estimate",
+        determined_year: 1975,
+        confidence: 0.75
+      )
+      age_determination_from_face = create(
+        :date_determination,
+        photo: photo_two,
+        photo_face: photo_face,
+        source_type: "age_estimate",
+        determined_year: 1980,
+        confidence: 0.75
+      )
+      non_age_determination = create(
+        :date_determination,
+        photo: photo_one,
+        source_type: "filename",
+        determined_year: 1965,
+        confidence: 0.6
+      )
+
+      allow(Photo::ConfidenceScorer).to receive(:score_age_estimate).with(person, 25).and_return(0.66)
+      allow(Photo::ConfidenceScorer).to receive(:score_age_estimate).with(person, 30).and_return(0.67)
+
+      person.update!(dob_year: 1955)
+
+      expect(age_determination_from_person.reload.determined_year).to eq(1980)
+      expect(age_determination_from_person.reload.confidence).to eq(0.66)
+
+      expect(age_determination_from_face.reload.determined_year).to eq(1985)
+      expect(age_determination_from_face.reload.confidence).to eq(0.67)
+
+      expect(non_age_determination.reload.determined_year).to eq(1965)
+      expect(non_age_determination.reload.confidence).to eq(0.6)
+    end
+
+    it "recalculates age-based determinations when date_of_birth changes" do
+      person = create(:person, dob_year: 1950, date_of_birth: nil)
+      photo = create(:photo, family: person.family)
+      photo_person = create(:photo_person, photo: photo, person: person, estimated_age: 25)
+
+      determination = create(
+        :date_determination,
+        photo: photo,
+        photo_person: photo_person,
+        source_type: "age_estimate",
+        determined_year: 1975,
+        confidence: 0.75
+      )
+
+      person.update!(date_of_birth: Date.new(1950, 6, 10))
+
+      expect(determination.reload.determined_year).to eq(1975)
+      expect(determination.reload.determined_month).to eq(6)
+      expect(determination.reload.confidence).to eq(0.85)
+    end
+
+    it "updates existing age-based determinations in place" do
+      person = create(:person, dob_year: 1950)
+      photo = create(:photo, family: person.family)
+      photo_person = create(:photo_person, photo: photo, person: person, estimated_age: 20)
+      determination = create(
+        :date_determination,
+        photo: photo,
+        photo_person: photo_person,
+        source_type: "age_estimate",
+        determined_year: 1970,
+        confidence: 0.75
+      )
+
+      expect {
+        person.update!(dob_year: 1952)
+      }.not_to change(DateDetermination, :count)
+
+      expect(determination.reload.id).to eq(determination.id)
+      expect(determination.reload.determined_year).to eq(1972)
+      expect(determination.reload.confidence).to eq(0.75)
+    end
+  end
 end

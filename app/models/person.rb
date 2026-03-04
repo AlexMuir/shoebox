@@ -13,6 +13,8 @@ class Person < ApplicationRecord
 
   scope :alphabetical, -> { order(:last_name, :first_name) }
 
+  after_update :recalculate_date_determinations, if: :dob_changed?
+
   def full_name
     [ first_name, last_name ].compact.join(" ")
   end
@@ -32,5 +34,47 @@ class Person < ApplicationRecord
 
   def has_dob?
     dob_year.present?
+  end
+
+  private
+
+  def dob_changed?
+    saved_change_to_dob_year? || saved_change_to_date_of_birth?
+  end
+
+  def recalculate_date_determinations
+    recalculate_photo_person_determinations
+    recalculate_photo_face_determinations
+  end
+
+  def recalculate_photo_person_determinations
+    DateDetermination
+      .for_source_type("age_estimate")
+      .where(photo_person_id: photo_people.where.not(estimated_age: nil).select(:id))
+      .find_each { |determination| recalculate_determination!(determination, determination.photo_person&.estimated_age) }
+  end
+
+  def recalculate_photo_face_determinations
+    DateDetermination
+      .for_source_type("age_estimate")
+      .where(photo_face_id: photo_faces.where.not(estimated_age: nil).select(:id))
+      .find_each { |determination| recalculate_determination!(determination, determination.photo_face&.estimated_age) }
+  end
+
+  def recalculate_determination!(determination, estimated_age)
+    return if estimated_age.blank? || dob_year.blank?
+
+    confidence = Photo::ConfidenceScorer.score_age_estimate(self, estimated_age)
+    determination.update!(
+      determined_year: dob_year + estimated_age,
+      determined_month: date_of_birth&.month,
+      determined_day: nil,
+      confidence: confidence,
+      source_detail: {
+        estimated_age: estimated_age,
+        person_dob_year: dob_year,
+        person_dob_circa: dob_circa
+      }
+    )
   end
 end

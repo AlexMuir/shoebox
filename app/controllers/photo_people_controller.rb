@@ -4,10 +4,12 @@ class PhotoPeopleController < ApplicationController
   def create
     @photo_person = @photo.photo_people.build(
       person_id: params.dig(:photo_person, :person_id),
+      estimated_age: params.dig(:photo_person, :estimated_age),
       tagged_by: Current.user
     )
 
     if @photo_person.save
+      Photo::DateDeterminationService.from_age_estimate(photo_person: @photo_person) if params.dig(:photo_person, :estimated_age).present?
       redirect_to @photo, notice: "Person tagged."
     else
       redirect_to @photo, alert: "Could not tag person."

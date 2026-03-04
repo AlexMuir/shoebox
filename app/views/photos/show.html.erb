@@ -94,8 +94,9 @@
             <span class="text-secondary">No people tagged yet.</span>
           <% end %>
         </div>
-        <%= simple_form_for :photo_person, url: photo_photo_people_path(@photo), html: { class: "d-flex gap-2" } do |f| %>
+        <%= simple_form_for :photo_person, url: photo_photo_people_path(@photo), html: { class: "d-flex gap-2 align-items-end" } do |f| %>
           <%= f.input :person_id, collection: current_family.people.where.not(id: @photo.people.pluck(:id)), label: false, prompt: "Select a person to tag...", input_html: { class: "form-select" } %>
+          <%= f.input :estimated_age, label: false, placeholder: "Age (optional)", input_html: { class: "form-control", type: "number", min: 1, max: 120 } %>
           <%= f.button :submit, "Tag Person", class: "btn btn-secondary" %>
         <% end %>
       </div>

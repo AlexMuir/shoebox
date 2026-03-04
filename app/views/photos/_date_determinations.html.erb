@@ -1,0 +1,61 @@
+<% if @photo.date_determinations.any? %>
+  <div class="card mt-3">
+    <div class="card-header">
+      <h3 class="card-title">Date Determinations</h3>
+    </div>
+    <div class="card-body border-bottom">
+      <div class="d-flex align-items-center">
+        <div class="me-3">
+          <i class="ti ti-calendar-check text-success" style="font-size: 2rem;"></i>
+        </div>
+        <div>
+          <div class="text-secondary mb-1">Determined Date</div>
+          <div class="h2 mb-0"><%= @photo.determined_date_text.presence || "Unknown" %></div>
+        </div>
+      </div>
+    </div>
+    <div class="list-group list-group-flush">
+      <% @photo.date_determinations.by_confidence.each do |determination| %>
+        <% is_best = determination.id == @photo.best_date_determination_id %>
+        <div class="list-group-item <%= 'bg-primary-lt' if is_best %>">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <% case determination.source_type %>
+              <% when 'exif' %>
+                <span class="badge bg-blue text-blue-fg">EXIF</span>
+              <% when 'age_estimate' %>
+                <span class="badge bg-purple text-purple-fg">Age Estimate</span>
+              <% when 'manual' %>
+                <span class="badge bg-green text-green-fg">Manual</span>
+              <% when 'filename' %>
+                <span class="badge bg-orange text-orange-fg">Filename</span>
+              <% else %>
+                <span class="badge bg-secondary text-secondary-fg"><%= determination.source_type.titleize %></span>
+              <% end %>
+              <% if is_best %>
+                <span class="badge bg-success text-success-fg"><i class="ti ti-check me-1"></i> Active</span>
+              <% end %>
+            </div>
+            <div class="d-flex align-items-center gap-2" title="Confidence: <%= (determination.confidence.to_f * 100).round %>%">
+              <div class="progress" style="width: 60px; height: 8px;">
+                <div class="progress-bar <%= determination.confidence.to_f > 0.7 ? 'bg-success' : (determination.confidence.to_f > 0.4 ? 'bg-warning' : 'bg-danger') %>" style="width: <%= (determination.confidence.to_f * 100).round %>%" role="progressbar" aria-valuenow="<%= (determination.confidence.to_f * 100).round %>" aria-valuemin="0" aria-valuemax="100" aria-label="<%= (determination.confidence.to_f * 100).round %>% Confidence">
+                  <span class="visually-hidden"><%= (determination.confidence.to_f * 100).round %>% Complete</span>
+                </div>
+              </div>
+              <span class="text-secondary small"><%= (determination.confidence.to_f * 100).round %>%</span>
+            </div>
+          </div>
+          <div class="mb-1">
+            <strong><%= determination.determined_date_text %></strong>
+          </div>
+          <% if determination.source_detail.present? %>
+            <div class="text-secondary small">
+              <i class="ti ti-info-circle me-1"></i>
+              <%= determination.source_detail %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

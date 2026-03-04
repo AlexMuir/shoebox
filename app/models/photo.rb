@@ -21,6 +21,7 @@ class Photo < ApplicationRecord
   has_many :contributions, dependent: :destroy
   has_many :photo_people, dependent: :destroy
   has_many :photo_faces, dependent: :destroy
+  has_many :date_determinations, dependent: :destroy
   has_many :people, through: :photo_people
 
   fuzzy_date_fields prefix: nil, fields: %i[date_type year month day season circa]
@@ -38,6 +39,21 @@ class Photo < ApplicationRecord
   def date_text
     return date_display if date_display.present?
     fuzzy_date_text(year, month, day, season, circa)
+  end
+
+  def determined_date_text
+    fuzzy_date_text(determined_year, determined_month, determined_day, nil, false)
+  end
+
+  def update_determined_date!
+    best_determination = date_determinations.by_confidence.first
+
+    update!(
+      determined_year: best_determination&.determined_year,
+      determined_month: best_determination&.determined_month,
+      determined_day: best_determination&.determined_day,
+      best_date_determination_id: best_determination&.id
+    )
   end
 
   def display_title

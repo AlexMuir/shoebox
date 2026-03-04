@@ -144,4 +144,16 @@ FactoryBot.define do
       person { association(:person, family: photo.family) }
     end
   end
+
+  factory :date_determination do
+    photo
+    source_type { "exif" }
+    determined_year { 1975 }
+    determined_month { 6 }
+    determined_day { 15 }
+    confidence { 0.9 }
+    created_by { nil }
+    photo_person { nil }
+    photo_face { nil }
+  end
 end

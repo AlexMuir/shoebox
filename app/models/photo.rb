@@ -45,6 +45,10 @@ class Photo < ApplicationRecord
     fuzzy_date_text(determined_year, determined_month, determined_day, nil, false)
   end
 
+  def has_determined_date?
+    determined_year.present?
+  end
+
   def update_determined_date!
     best_determination = date_determinations.by_confidence.first
 
@@ -172,6 +176,9 @@ class Photo < ApplicationRecord
     end
 
     update_columns(updates) if updates.any?
+
+    # Create DateDetermination record from filename
+    Photo::DateDeterminationService.from_filename(self, date_result: result)
   rescue => e
     Rails.logger.warn("Filename date extraction failed for Photo ##{id}: #{e.message}")
   end

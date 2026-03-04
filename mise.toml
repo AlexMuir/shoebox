@@ -1,2 +1,36 @@
 [tools]
+ruby = "3.2.2"
 node = "24"
+python = "3.12"
+
+[tasks.dev]
+description = "Start development server"
+run = "bin/dev"
+
+[tasks.test]
+description = "Run test suite"
+run = "bundle exec rspec"
+
+[tasks."test:watch"]
+description = "Run tests in watch mode"
+run = "bundle exec rspec --fail-fast --format progress"
+
+[tasks.lint]
+description = "Run linter"
+run = "bin/rubocop"
+
+[tasks."lint:fix"]
+description = "Run linter with auto-fix"
+run = "bin/rubocop -A"
+
+[tasks.console]
+description = "Open Rails console"
+run = "bin/rails console"
+
+[tasks."db:reset"]
+description = "Reset database"
+run = "bin/rails db:reset"
+
+[tasks."db:migrate"]
+description = "Run database migrations"
+run = "bin/rails db:migrate"

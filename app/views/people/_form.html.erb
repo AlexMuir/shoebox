@@ -24,6 +24,15 @@
           <%= f.input :date_of_death, as: :date, html5: true, input_html: { class: 'form-control' }, label_html: { class: 'form-label' } %>
         </div>
       </fieldset>
+      <fieldset class="form-fieldset">
+        <legend>Birth Date (Fuzzy)</legend>
+        <div class="mb-3">
+          <%= f.input :dob_year, as: :integer, input_html: { class: 'form-control', placeholder: 'e.g., 1952' }, label_html: { class: 'form-label' } %>
+        </div>
+        <div class="mb-3">
+          <%= f.input :dob_circa, as: :boolean, input_html: { class: 'form-check-input' }, label_html: { class: 'form-check-label' } %>
+        </div>
+      </fieldset>
     </div>
   </div>
   <div class="row">

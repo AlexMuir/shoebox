@@ -58,6 +58,6 @@ class PeopleController < ApplicationController
   end
 
   def person_params
-    params.expect(person: [ :first_name, :last_name, :maiden_name, :date_of_birth, :date_of_death, :bio ])
+    params.expect(person: [ :first_name, :last_name, :maiden_name, :date_of_birth, :date_of_death, :bio, :dob_year, :dob_circa ])
   end
 end

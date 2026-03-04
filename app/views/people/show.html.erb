@@ -17,10 +17,16 @@
           <div class="text-secondary mb-3">née <%= @person.maiden_name %></div>
         <% end %>
         <div class="mt-3">
-          <% if @person.date_of_birth.present? || @person.date_of_death.present? %>
+        <% if @person.date_of_birth.present? || @person.date_of_death.present? || @person.dob_text.present? %>
             <div class="mb-2">
               <i class="ti ti-calendar icon me-2 text-secondary"></i>
-              <%= @person.date_of_birth&.to_fs(:long) || "?" %> - <%= @person.date_of_death&.to_fs(:long) || "Present" %>
+              <% if @person.date_of_birth.present? %>
+                <%= @person.date_of_birth&.to_fs(:long) %> - <%= @person.date_of_death&.to_fs(:long) || "Present" %>
+              <% elsif @person.dob_text.present? %>
+                <%= @person.dob_text %>
+              <% else %>
+                ? - <%= @person.date_of_death&.to_fs(:long) || "Present" %>
+              <% end %>
             </div>
             <% if @person.age %>
               <div class="mb-2">

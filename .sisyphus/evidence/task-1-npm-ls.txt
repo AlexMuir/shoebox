@@ -1,0 +1,6 @@
+photos-photo-view@ /home/pippin/projects/photos-photo-view
+├── @vitejs/plugin-react@5.1.4
+├─┬ react-dom@19.2.4
+│ └── react@19.2.4 deduped
+└── react@19.2.4
+

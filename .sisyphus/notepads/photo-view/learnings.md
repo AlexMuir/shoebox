@@ -1,0 +1,1 @@
+- Created _photo_view.scss with BEM-like naming convention for the photo view modal.

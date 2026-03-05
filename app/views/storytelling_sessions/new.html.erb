@@ -1,0 +1,41 @@
+<div class="storytelling-setup">
+  <div class="storytelling-setup__container">
+    <div class="storytelling-setup__header">
+      <h2 class="storytelling-setup__title">Tell the Story</h2>
+      <%= link_to photos_path, class: "storytelling-setup__close", title: "Cancel" do %>
+        <i class="ti ti-x"></i>
+      <% end %>
+    </div>
+    <%= form_with model: @storytelling_session, url: storytelling_sessions_path, local: true do |f| %>
+      <div class="storytelling-setup__body">
+        <% if @storytelling_session.errors.any? %>
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              <% @storytelling_session.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        <div class="mb-4">
+          <%= render "shared/location_autocomplete",
+                     field_name: "storytelling_session[location_id]",
+                     label: "Where are you? (optional)",
+                     current_location: @storytelling_session.location,
+                     placeholder: "Search for a location..." %>
+        </div>
+        <div class="mb-4">
+          <%= render "shared/person_multi_select",
+                     field_name: "storytelling_session[person_ids][]",
+                     label: "Who's telling the story?",
+                     selected_people: @storytelling_session.storytellers || [],
+                     placeholder: "Search for people..." %>
+        </div>
+      </div>
+      <div class="storytelling-setup__footer">
+        <%= link_to "Cancel", photos_path, class: "btn btn-link" %>
+        <%= f.submit "Start Storytelling", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

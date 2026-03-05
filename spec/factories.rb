@@ -156,4 +156,26 @@ FactoryBot.define do
     photo_person { nil }
     photo_face { nil }
   end
+
+  factory :storytelling_session do
+    family
+    created_by { association(:user) }
+  end
+
+  factory :storytelling_session_person do
+    storytelling_session
+    person
+  end
+
+  factory :story do
+    storytelling_session
+    photo
+    after(:build) do |story|
+      story.audio.attach(
+        io: StringIO.new("fake audio data"),
+        filename: "test-recording.webm",
+        content_type: "audio/webm"
+      )
+    end
+  end
 end

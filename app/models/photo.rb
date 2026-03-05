@@ -23,6 +23,7 @@ class Photo < ApplicationRecord
   has_many :photo_faces, dependent: :destroy
   has_many :date_determinations, dependent: :destroy
   has_many :people, through: :photo_people
+  has_many :stories, dependent: :destroy
 
   fuzzy_date_fields prefix: nil, fields: %i[date_type year month day season circa]
 

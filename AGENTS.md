@@ -134,9 +134,16 @@ The app uses a passwordless authentication flow:
   - `Person#dob_text` returns human-readable DOB string.
 - **Photo tagging ages:** `PhotoPerson` and `PhotoFace` have optional `estimated_age` (integer, 1-120).
   - When set alongside a person's DOB, triggers automatic date determination.
+- **Storytelling Mode:** Allows family members to record audio narrations over a slideshow of photos.
+  - `StorytellingSession`: Groups selected photos for narration, with optional location and storyteller people.
+  - `Story`: Audio recording (Active Storage `audio` attachment) linked to a photo and session.
+  - Recording: Setup form selects photos/people/location → full-screen slideshow with MediaRecorder → audio saved per photo via fetch POST.
+  - Playback: Stories shown in PhotoSidebar.jsx with native `<audio controls>`.
+  - Audio formats: WebM/Opus (Chrome/Firefox), MP4/AAC (Safari).
+  - Stimulus controllers: `storytelling_controller.js` (recording), `person_multi_select_controller.js` (setup form).
 
 ## Controllers
-The application includes 14 primary controllers:
+The application includes 16 primary controllers:
 1. `ApplicationController`: Base class; handles authentication and multi-tenancy scoping.
 2. `SiteController`: Landing page and general site navigation.
 3. `SessionsController`: Initiates passwordless login by generating and sending codes.
@@ -151,6 +158,8 @@ The application includes 14 primary controllers:
 12. `UploadsController`: Multi-step photo upload and processing pipeline.
 13. `FamiliesController`: Handles multi-tenant scoping and family switching.
 14. `Rails::HealthController`: Internal Rails endpoint for system health checks.
+15. `StorytellingSessionsController`: Manages storytelling session setup (new/create) and slideshow recording interface (show).
+16. `StoriesController`: Handles audio upload for storytelling recordings (create).
 
 ## Active Storage Variants
 Photos use the following variants for the `working_image` attachment:

@@ -63,5 +63,30 @@ RSpec.describe "Photos JSON API", type: :request do
       expect(body["faces"].length).to eq(1)
       expect(body["faces"].first["person"]).to include("id" => person.id)
     end
+
+    it "includes stories array with session and storyteller data" do
+      session = create(:storytelling_session, family: family)
+      storyteller = create(:person, family: family)
+      create(:storytelling_session_person, storytelling_session: session, person: storyteller)
+      story = create(:story, photo: photo, storytelling_session: session)
+
+      get photo_path(photo), headers: { "Accept" => "application/json" }
+      body = JSON.parse(response.body)
+      expect(body).to include("stories")
+      expect(body["stories"]).to be_an(Array)
+      expect(body["stories"].length).to eq(1)
+
+      story_data = body["stories"].first
+      expect(story_data).to include("id", "audio_url", "storytelling_session")
+      expect(story_data["storytelling_session"]).to include("id", "storytellers", "location")
+      expect(story_data["storytelling_session"]["storytellers"]).to be_an(Array)
+      expect(story_data["storytelling_session"]["storytellers"].first).to include("id", "name")
+    end
+
+    it "returns empty stories array when photo has no stories" do
+      get photo_path(photo), headers: { "Accept" => "application/json" }
+      body = JSON.parse(response.body)
+      expect(body["stories"]).to eq([])
+    end
   end
 end

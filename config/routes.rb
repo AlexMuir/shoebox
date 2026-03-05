@@ -28,6 +28,9 @@ Rails.application.routes.draw do
     end
   end
   resources :uploads, only: [ :index, :show, :new, :create, :edit, :update ]
+  resources :storytelling_sessions, only: [ :new, :create, :show ] do
+    resources :stories, only: [ :create ]
+  end
 
   post "families/:id/switch", to: "families#switch", as: :switch_family
 

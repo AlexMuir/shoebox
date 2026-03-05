@@ -1,6 +1,12 @@
 <% content_for(:page_title, "Photos") %>
 <% content_for(:page_actions) do %>
   <div class="btn-list">
+    <% if @photos.any? %>
+      <%= link_to new_storytelling_session_path, class: "btn btn-primary d-none d-sm-inline-block", data: { storytelling_btn: true } do %>
+        <i class="ti ti-microphone icon"></i>
+        Tell Stories
+      <% end %>
+    <% end %>
     <%= link_to new_upload_path, class: "btn btn-primary d-none d-sm-inline-block" do %>
       <i class="ti ti-upload icon"></i>
       Upload Photos
@@ -40,3 +46,9 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  if (!window.MediaRecorder) {
+    document.querySelector('[data-storytelling-btn]')?.remove()
+  }
+</script>

@@ -6,6 +6,7 @@ class Family < ApplicationRecord
   has_many :events, dependent: :destroy
   has_many :locations, dependent: :destroy
   has_many :uploads, dependent: :destroy
+  has_many :storytelling_sessions, dependent: :destroy
 
   validates :name, presence: true
 end

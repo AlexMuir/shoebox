@@ -68,6 +68,34 @@ export function PhotoSidebar({ photoData, photoId }) {
             </div>
           )}
 
+          {photoData.stories && photoData.stories.length > 0 && (
+            <div className="mb-4">
+              <h4 className="card-title fs-5 mb-2">Stories</h4>
+              <div className="d-flex flex-column gap-3">
+                {photoData.stories.map(story => (
+                  <div key={story.id} className="border-start border-2 border-success ps-3">
+                    <div className="mb-2">
+                      <audio controls className="w-100" style={{ height: '32px' }}>
+                        <source src={story.audio_url} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                      </audio>
+                    </div>
+                    {story.storytellers && story.storytellers.length > 0 && (
+                      <div className="text-muted small">
+                        Told by {story.storytellers.map(s => s.name).join(', ')}
+                      </div>
+                    )}
+                    {story.location?.name && (
+                      <div className="text-muted small">
+                        {story.location.name}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-auto pt-4">
             <a href={`/photos/${photoId}`} className="btn btn-outline-primary w-100" target="_self">
               View full details →

@@ -11,6 +11,7 @@ class PhotosController < ApplicationController
   def show
     @photo.import_detected_faces!
     @photo_faces = @photo.photo_faces.includes(:person).ordered
+    @stories = @photo.stories.includes(storytelling_session: { storytellers: [], location: {} })
 
     respond_to do |format|
       format.html
@@ -100,6 +101,19 @@ class PhotosController < ApplicationController
           note: c.note,
           user_email: c.user.email,
           created_at: c.created_at.to_date.iso8601
+        }
+      },
+      stories: @stories.map { |story|
+        {
+          id: story.id,
+          audio_url: story.audio.attached? ? url_for(story.audio) : nil,
+          storytelling_session: {
+            id: story.storytelling_session.id,
+            storytellers: story.storytelling_session.storytellers.map { |s|
+              { id: s.id, name: s.full_name }
+            },
+            location: story.storytelling_session.location ? { id: story.storytelling_session.location.id, name: story.storytelling_session.location.name } : nil
+          }
         }
       },
       prev_id: prev_id,

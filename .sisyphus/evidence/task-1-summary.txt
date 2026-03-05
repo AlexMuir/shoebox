@@ -1,45 +1,35 @@
-TASK 1: Worktree Cleanup & Repository Optimization
-====================================================
+TASK 1: DB MIGRATION — 3 NEW TABLES
+Status: ✅ COMPLETE
 
-COMPLETION STATUS: ✓ ALL REQUIREMENTS MET
+DELIVERABLES:
+✅ Migration file created: db/migrate/20260305150623_create_storytelling_tables.rb
+✅ db/structure.sql updated with all tables and indexes
+✅ Migration runs cleanly: bin/rails db:migrate (0.0243s)
+✅ Migration status shows "up": bin/rails db:migrate:status:primary
+✅ Rollback works cleanly: bin/rails db:migrate:down:primary VERSION=20260305150623
 
-REQUIREMENTS CHECKLIST:
-[✓] 3 worktrees removed: photo-view, photo-metadata, location-autocomplete
-[✓] 3 local branches deleted: photo-view, photo-metadata, location-autocomplete
-[✓] Git gc run with --prune=now (objects packed)
-[✓] .sisyphus/ added to .gitignore
-[✓] Verification: git worktree list shows 3 entries (main, docs-freshness-hook, face-recognition)
-[✓] Verification: git count-objects shows in-pack: 1578 > 0
-[✓] Evidence saved to .sisyphus/evidence/
+TABLES CREATED:
+1. storytelling_sessions (3 FKs: family, location, created_by)
+2. storytelling_session_people (2 FKs: storytelling_session, person + unique composite index)
+3. stories (2 FKs: storytelling_session, photo + photo_id index)
 
-EXECUTION SUMMARY:
+INDEXES VERIFIED:
+✅ storytelling_sessions: family_id, location_id, created_by_id
+✅ storytelling_session_people: storytelling_session_id, person_id, unique composite
+✅ stories: storytelling_session_id, photo_id
 
-1. WORKTREE CLEANUP
-   - Cleaned uncommitted changes in all 3 worktrees
-   - Removed worktrees using git worktree remove (safe method)
-   - Deleted corresponding local branches
-   - Result: 6 worktrees → 3 worktrees
+DATABASE VERIFICATION:
+✅ All 3 tables exist in PostgreSQL
+✅ All 11 indexes created correctly
+✅ Foreign key constraints in place
+✅ Timestamps (created_at, updated_at) on all tables
 
-2. OBJECT PACKING
-   - Ran git gc --prune=now
-   - Cleaned temporary pack files
-   - Result: 1605 loose objects → 1578 packed objects in 1 pack file
-   - Disk optimization: 19860 bytes loose → 12036 bytes packed
+PATTERN COMPLIANCE:
+✅ Follows Rails 8.1 migration conventions
+✅ Uses t.references with null: false for required FKs
+✅ Uses t.references with optional FK for location
+✅ Custom FK naming with foreign_key: { to_table: :users }
+✅ Unique composite index on join table (storytelling_session_people)
+✅ Proper index on photo_id for efficient lookup
 
-3. GITIGNORE UPDATE
-   - Added .sisyphus/ to .gitignore with comment header
-   - Prevents accidental commits of development metadata
-
-EVIDENCE FILES:
-- task-1-worktrees.txt: Worktree deletion verification
-- task-1-gc.txt: Object packing verification
-- task-1-gitignore.txt: .gitignore update verification
-- task-1-summary.txt: This summary
-
-DISK SPACE FREED:
-- photo-view: 122 MB
-- photo-metadata: 52 MB
-- location-autocomplete: 63 MB
-- Total: ~237 MB freed
-
-NEXT TASK: Task 2 (Review docs-freshness-hook worktree)
+READY FOR NEXT TASK: Model creation (Task 2)

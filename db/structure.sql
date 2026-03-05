@@ -725,6 +725,103 @@ ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
+-- Name: stories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stories (
+    id bigint NOT NULL,
+    storytelling_session_id bigint NOT NULL,
+    photo_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: stories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.stories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: stories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.stories_id_seq OWNED BY public.stories.id;
+
+
+--
+-- Name: storytelling_session_people; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.storytelling_session_people (
+    id bigint NOT NULL,
+    storytelling_session_id bigint NOT NULL,
+    person_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: storytelling_session_people_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.storytelling_session_people_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: storytelling_session_people_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.storytelling_session_people_id_seq OWNED BY public.storytelling_session_people.id;
+
+
+--
+-- Name: storytelling_sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.storytelling_sessions (
+    id bigint NOT NULL,
+    family_id bigint NOT NULL,
+    location_id bigint,
+    created_by_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: storytelling_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.storytelling_sessions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: storytelling_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.storytelling_sessions_id_seq OWNED BY public.storytelling_sessions.id;
+
+
+--
 -- Name: uploads; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -920,6 +1017,27 @@ ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.ses
 
 
 --
+-- Name: stories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stories ALTER COLUMN id SET DEFAULT nextval('public.stories_id_seq'::regclass);
+
+
+--
+-- Name: storytelling_session_people id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_session_people ALTER COLUMN id SET DEFAULT nextval('public.storytelling_session_people_id_seq'::regclass);
+
+
+--
+-- Name: storytelling_sessions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_sessions ALTER COLUMN id SET DEFAULT nextval('public.storytelling_sessions_id_seq'::regclass);
+
+
+--
 -- Name: uploads id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1086,6 +1204,30 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: stories stories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stories
+    ADD CONSTRAINT stories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: storytelling_session_people storytelling_session_people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_session_people
+    ADD CONSTRAINT storytelling_session_people_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: storytelling_sessions storytelling_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_sessions
+    ADD CONSTRAINT storytelling_sessions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: uploads uploads_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1099,6 +1241,13 @@ ALTER TABLE ONLY public.uploads
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_on_storytelling_session_id_person_id_a133b707e6; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_on_storytelling_session_id_person_id_a133b707e6 ON public.storytelling_session_people USING btree (storytelling_session_id, person_id);
 
 
 --
@@ -1466,6 +1615,55 @@ CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
 
 
 --
+-- Name: index_stories_on_photo_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stories_on_photo_id ON public.stories USING btree (photo_id);
+
+
+--
+-- Name: index_stories_on_storytelling_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stories_on_storytelling_session_id ON public.stories USING btree (storytelling_session_id);
+
+
+--
+-- Name: index_storytelling_session_people_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_storytelling_session_people_on_person_id ON public.storytelling_session_people USING btree (person_id);
+
+
+--
+-- Name: index_storytelling_session_people_on_storytelling_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_storytelling_session_people_on_storytelling_session_id ON public.storytelling_session_people USING btree (storytelling_session_id);
+
+
+--
+-- Name: index_storytelling_sessions_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_storytelling_sessions_on_created_by_id ON public.storytelling_sessions USING btree (created_by_id);
+
+
+--
+-- Name: index_storytelling_sessions_on_family_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_storytelling_sessions_on_family_id ON public.storytelling_sessions USING btree (family_id);
+
+
+--
+-- Name: index_storytelling_sessions_on_location_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_storytelling_sessions_on_location_id ON public.storytelling_sessions USING btree (location_id);
+
+
+--
 -- Name: index_uploads_on_family_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1613,11 +1811,27 @@ ALTER TABLE ONLY public.photos
 
 
 --
+-- Name: storytelling_session_people fk_rails_491b83e965; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_session_people
+    ADD CONSTRAINT fk_rails_491b83e965 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
 -- Name: photo_faces fk_rails_4cc5129401; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.photo_faces
     ADD CONSTRAINT fk_rails_4cc5129401 FOREIGN KEY (photo_id) REFERENCES public.photos(id);
+
+
+--
+-- Name: stories fk_rails_6406637021; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stories
+    ADD CONSTRAINT fk_rails_6406637021 FOREIGN KEY (photo_id) REFERENCES public.photos(id);
 
 
 --
@@ -1642,6 +1856,14 @@ ALTER TABLE ONLY public.date_determinations
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT fk_rails_758836b4f0 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: storytelling_session_people fk_rails_77e2870b0a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_session_people
+    ADD CONSTRAINT fk_rails_77e2870b0a FOREIGN KEY (storytelling_session_id) REFERENCES public.storytelling_sessions(id);
 
 
 --
@@ -1741,11 +1963,27 @@ ALTER TABLE ONLY public.people
 
 
 --
+-- Name: storytelling_sessions fk_rails_b5ca4b6757; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_sessions
+    ADD CONSTRAINT fk_rails_b5ca4b6757 FOREIGN KEY (location_id) REFERENCES public.locations(id);
+
+
+--
 -- Name: photo_faces fk_rails_b77bdadfa9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.photo_faces
     ADD CONSTRAINT fk_rails_b77bdadfa9 FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
+-- Name: storytelling_sessions fk_rails_b961f6a9bf; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_sessions
+    ADD CONSTRAINT fk_rails_b961f6a9bf FOREIGN KEY (family_id) REFERENCES public.families(id);
 
 
 --
@@ -1797,11 +2035,27 @@ ALTER TABLE ONLY public.contributions
 
 
 --
+-- Name: stories fk_rails_dc6c796000; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stories
+    ADD CONSTRAINT fk_rails_dc6c796000 FOREIGN KEY (storytelling_session_id) REFERENCES public.storytelling_sessions(id);
+
+
+--
 -- Name: face_regions fk_rails_e69c642dcb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.face_regions
     ADD CONSTRAINT fk_rails_e69c642dcb FOREIGN KEY (person_id) REFERENCES public.people(id);
+
+
+--
+-- Name: storytelling_sessions fk_rails_e769c6a3e0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storytelling_sessions
+    ADD CONSTRAINT fk_rails_e769c6a3e0 FOREIGN KEY (created_by_id) REFERENCES public.users(id);
 
 
 --
@@ -1827,6 +2081,7 @@ ALTER TABLE ONLY public.login_codes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260305150623'),
 ('20260304114561'),
 ('20260304114560'),
 ('20260304114559'),

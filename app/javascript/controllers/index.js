@@ -9,3 +9,7 @@ import LocationAutocompleteController from "./location_autocomplete_controller"
 application.register("location-autocomplete", LocationAutocompleteController)
 import PhotoViewController from "./photo_view_controller"
 application.register("photo-view", PhotoViewController)
+import PersonMultiSelectController from "./person_multi_select_controller"
+application.register("person-multi-select", PersonMultiSelectController)
+import StorytellingController from "./storytelling_controller"
+application.register("storytelling", StorytellingController)

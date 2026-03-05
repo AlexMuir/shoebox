@@ -1,0 +1,30 @@
+<%# Reusable PersonMultiSelect component (chip/tag pattern) %>
+<%# Usage: render "shared/person_multi_select", field_name: "storytelling_session[person_ids][]", label: "People", selected_people: [], placeholder: "Search for people..." %>
+<% selected_people ||= [] %>
+<% placeholder ||= "Search for people..." %>
+<% field_name ||= "storytelling_session[person_ids][]" %>
+<div data-controller="person-multi-select"
+     data-person-multi-select-search-url-value="<%= search_people_path %>"
+     data-person-multi-select-create-url-value="<%= people_path(format: :json) %>"
+     data-person-multi-select-input-name-value="<%= field_name %>"
+     style="position: relative;">
+  <label class="form-label"><%= label %></label>
+  <div data-person-multi-select-target="chips" class="mb-2">
+    <% selected_people.each do |person| %>
+      <span class="badge bg-primary-lt me-1 mb-1 d-inline-flex align-items-center gap-1" style="font-size: 0.85rem; padding: 0.35em 0.65em;">
+        <%= person.full_name %>
+        <button type="button" class="btn-close btn-close-sm ms-1" style="font-size: 0.5rem;" data-action="click->person-multi-select#removePerson" data-person-id="<%= person.id %>" aria-label="Remove"></button>
+      </span>
+      <input type="hidden" name="<%= field_name %>" value="<%= person.id %>" data-person-name="<%= person.full_name %>">
+    <% end %>
+  </div>
+  <input type="text"
+         class="form-control"
+         placeholder="<%= placeholder %>"
+         autocomplete="off"
+         data-person-multi-select-target="input"
+         data-action="input->person-multi-select#onInput keydown->person-multi-select#onKeydown">
+  <div class="dropdown-menu w-100" style="position: absolute; top: 100%; z-index: 1000;"
+       data-person-multi-select-target="results"></div>
+  <div data-person-multi-select-target="createForm" style="display: none;"></div>
+</div>

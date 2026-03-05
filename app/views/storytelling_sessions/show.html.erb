@@ -1,0 +1,72 @@
+<div
+  class="storytelling-player"
+  data-controller="storytelling"
+  data-storytelling-photo-ids-value="<%= current_family.photos.chronological.pluck(:id).to_json %>"
+  data-storytelling-session-id-value="<%= @storytelling_session.id %>"
+>
+  <header class="storytelling-player__topbar">
+    <p class="storytelling-player__progress" data-storytelling-target="progress">0 of 0 photos</p>
+    <button
+      type="button"
+      class="storytelling-player__exit"
+      data-action="storytelling#exit"
+      aria-label="Exit storytelling"
+    >
+      Done
+    </button>
+  </header>
+  <main class="storytelling-player__stage" aria-live="polite">
+    <img
+      class="storytelling-player__photo"
+      data-storytelling-target="photo"
+      src=""
+      alt="Storytelling photo"
+    >
+    </main>
+    <footer class="storytelling-player__controls" role="group" aria-label="Storytelling controls">
+      <div class="storytelling-player__controls-left">
+        <button
+        type="button"
+        class="btn btn-light storytelling-player__btn"
+        data-storytelling-target="recordBtn"
+        data-action="storytelling#startRecording"
+      >
+          <i class="ti ti-microphone me-1" aria-hidden="true"></i>Record
+        </button>
+        <button
+        type="button"
+        class="btn btn-danger storytelling-player__btn d-none"
+        data-storytelling-target="stopBtn"
+        data-action="storytelling#stopRecording"
+      >
+          <i class="ti ti-player-stop-filled me-1" aria-hidden="true"></i>Stop
+        </button>
+        <button
+        type="button"
+        class="btn btn-outline-light storytelling-player__btn"
+        data-storytelling-target="skipBtn"
+        data-action="storytelling#skip"
+      >
+          Skip
+        </button>
+      </div>
+      <div class="storytelling-player__controls-right">
+        <button
+        type="button"
+        class="btn btn-outline-light storytelling-player__nav"
+        data-action="storytelling#previous"
+        aria-label="Previous photo"
+      >
+          <i class="ti ti-arrow-left" aria-hidden="true"></i>
+        </button>
+        <button
+        type="button"
+        class="btn btn-outline-light storytelling-player__nav"
+        data-action="storytelling#next"
+        aria-label="Next photo"
+      >
+          <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </footer>
+  </div>

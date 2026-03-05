@@ -74,6 +74,11 @@ Install cloudflared:
 3. Open that URL on your phone/tablet — valid HTTPS with real certificates
 4. No Cloudflare account needed — uses "quick tunnels" which are free
 
+### Rails Configuration
+The development environment is already configured to allow `*.trycloudflare.com` hosts. If you see a "Blocked hosts" error, ensure your `config/environments/development.rb` includes:
+```ruby
+config.hosts << /.*\.trycloudflare\.com/
+```
 ### Known Limitations
 - Vite HMR (hot module replacement) does not work through the tunnel — pages must be manually refreshed. Console shows `[vite] server connection lost`; this is harmless.
 - The tunnel URL changes every time `bin/dev` is restarted

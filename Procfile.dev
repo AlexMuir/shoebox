@@ -3,3 +3,4 @@ css: bin/rails dartsass:watch
 vite: bin/vite dev
 jobs: bin/jobs
 orientation: services/orientation/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8150 --app-dir services/orientation
+tunnel: cloudflared tunnel --url http://localhost:3000

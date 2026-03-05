@@ -51,12 +51,37 @@ bin/rails db:seed
 ```
 
 ## Procfile Processes
-The `Procfile.dev` defines 5 processes required for development:
+The `Procfile.dev` defines 6 processes required for development:
 - `web`: Rails server (port 3000)
 - `css`: DartSass watcher for SCSS
 - `vite`: Vite dev server for JS/React
 - `jobs`: Background job processor
 - `orientation`: Python FastAPI service for orientation detection (port 8150)
+- `tunnel`: Cloudflare Tunnel for HTTPS access on mobile devices
+
+## HTTPS Dev Access (Cloudflare Tunnel)
+
+For testing on mobile devices, the app can be accessed via HTTPS using a Cloudflare Tunnel. This is required for browser APIs that need a secure context (like `getUserMedia` for Storytelling Mode microphone access).
+
+### Prerequisite
+Install cloudflared:
+- macOS: `brew install cloudflared`
+- Linux: See https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+
+### Usage
+1. Start `bin/dev` as normal — cloudflared starts automatically as the 6th process
+2. Look for the tunnel URL in console output (line starting with `tunnel |` containing `*.trycloudflare.com`)
+3. Open that URL on your phone/tablet — valid HTTPS with real certificates
+4. No Cloudflare account needed — uses "quick tunnels" which are free
+
+### Known Limitations
+- Vite HMR (hot module replacement) does not work through the tunnel — pages must be manually refreshed. Console shows `[vite] server connection lost`; this is harmless.
+- The tunnel URL changes every time `bin/dev` is restarted
+- Requires internet connection (traffic routes through Cloudflare's edge)
+- The tunnel URL is publicly accessible while running (random and temporary)
+
+### Alternative
+Run `cloudflared tunnel --url http://localhost:3000` in a separate terminal if you don't want it in Procfile.
 
 ## Git Hooks
 A pre-commit hook blocks commits with 10 or more staged files unless `AGENTS.md` or `README.md` is also staged. This enforces documentation freshness on large changes.
